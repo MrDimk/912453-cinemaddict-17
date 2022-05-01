@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import {View} from './view';
 
 const createNewProfileElement = () => `
 <section class="header__profile profile">
@@ -7,20 +7,13 @@ const createNewProfileElement = () => `
   </section>
 `;
 
-class ProfileView {
+class ProfileView extends View{
+  constructor() {
+    super();
+  }
+
   getTemplate() {
     return createNewProfileElement();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
 

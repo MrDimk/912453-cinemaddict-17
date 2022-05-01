@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import {View} from './view';
 
 const createFilterTemplate = () => `
 <nav class="main-navigation">
@@ -11,20 +11,13 @@ const createFilterTemplate = () => `
     </nav>
 `;
 
-class FilterView {
+class FilterView extends View{
+  constructor() {
+    super();
+  }
+
   getTemplate() {
     return createFilterTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
 

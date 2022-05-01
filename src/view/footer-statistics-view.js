@@ -1,27 +1,17 @@
-import {createElement} from '../render.js';
+import {View} from './view';
 
 const createFooterTemplate = (count) => `
   <p>${count} movies inside</p>
 `;
 
-class FooterStatisticsView {
+class FooterStatisticsView extends View{
   constructor(count) {
+    super();
     this.filmsCount = count;
   }
 
   getTemplate() {
     return createFooterTemplate(this.filmsCount);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
 

@@ -1,21 +1,14 @@
-import {createElement} from '../../render.js';
+import {View} from '../view';
 
 const createFilmsTemplate = () => '<section class="films"></section>';
 
-class FilmsView {
+class FilmsView extends View {
+  constructor() {
+    super();
+  }
+
   getTemplate() {
     return createFilmsTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
 

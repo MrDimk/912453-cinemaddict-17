@@ -1,26 +1,16 @@
-import {createElement} from '../../render.js';
+import {View} from '../view';
 
 const createFilmsTitleTemplate = (title, isHidden) => `<h2 class="films-list__title${isHidden ? ' visually-hidden' : ''}">${title}</h2>`;
 
-class FilmsTitleView {
+class FilmsTitleView extends View{
   constructor(title, isHidden = false) {
+    super();
     this.title = title;
     this.isHidden = isHidden;
   }
 
   getTemplate() {
     return createFilmsTitleTemplate(this.title, this.isHidden);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
 

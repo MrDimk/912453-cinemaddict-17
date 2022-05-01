@@ -1,11 +1,11 @@
-import {render} from '../render.js';
-import {FilmsView} from '../view/films-view/films-view.js';
-import {FilmsListView} from '../view/films-view/films-list-view.js';
-import {FilmsTitleView} from '../view/films-view/films-list-title-view.js';
-import {FilmsListContainerView} from '../view/films-view/films-list-container-view.js';
-import {FilmCardView} from '../view/films-view/film-card-view.js';
-import {ShowMoreButtonView} from '../view/films-view/show-more-button-view.js';
-import {FilmDetailsView} from '../view/films-view/film-details-view.js';
+import {render} from '../render';
+import {FilmsView} from '../view/films-view/films-view';
+import {FilmsListView} from '../view/films-view/films-list-view';
+import {FilmsTitleView} from '../view/films-view/films-list-title-view';
+import {FilmsListContainerView} from '../view/films-view/films-list-container-view';
+import {FilmCardView} from '../view/films-view/film-card-view';
+import {ShowMoreButtonView} from '../view/films-view/show-more-button-view';
+import {FilmDetailsView} from '../view/films-view/film-details-view';
 
 const filmsListTypes = {
   main: {

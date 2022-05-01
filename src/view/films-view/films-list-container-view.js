@@ -1,21 +1,14 @@
-import {createElement} from '../../render.js';
+import {View} from '../view';
 
 const createFilmsListContainerTemplate = () => '<div class="films-list__container"></div>';
 
-class FilmsListContainerView {
+class FilmsListContainerView extends View {
+  constructor() {
+    super();
+  }
+
   getTemplate() {
     return createFilmsListContainerTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
 
