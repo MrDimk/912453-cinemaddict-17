@@ -6,6 +6,7 @@ import {FilmsListContainerView} from '../view/films-view/films-list-container-vi
 import {FilmCardView} from '../view/films-view/film-card-view';
 import {ShowMoreButtonView} from '../view/films-view/show-more-button-view';
 import {FilmDetailsView} from '../view/films-view/film-details-view';
+import {FilmCardAdapter} from '../view/films-view/film-view-adapter';
 
 const filmsListTypes = {
   main: {
@@ -41,7 +42,10 @@ class FilmsPresenter {
   filmsMostCommentedListTitle = new FilmsTitleView(filmsListTypes.mostCommented.title);
   filmsMostCommentedListContainer = new FilmsListContainerView();
 
-  init(container) {
+  init(container, data) {
+
+    this.data = data;
+
     render(this.filmsContent, container);
 
     render(this.allFilmsList, this.filmsContent.getElement());
@@ -57,14 +61,23 @@ class FilmsPresenter {
     render(this.filmsMostCommentedListTitle, this.filmsMostCommentedList.getElement());
     render(this.filmsMostCommentedListContainer, this.filmsMostCommentedListTitle.getElement());
 
-    Array.from(filmsListTypes.main).forEach(() => render(new FilmCardView(), this.allFilmsListContainer.getElement()));
-    Array.from(filmsListTypes.topRated).forEach(() => render(new FilmCardView(), this.filmsTopRatedListContainer.getElement()));
-    Array.from(filmsListTypes.mostCommented).forEach(() => render(new FilmCardView(), this.filmsMostCommentedListContainer.getElement()));
+    // Array.from(filmsListTypes.main).forEach((value, index) => render(new FilmCardView(data), this.allFilmsListContainer.getElement()));
+    for (const film of this.data.films) {
+      render(new FilmCardView(new FilmCardAdapter(film)), this.allFilmsListContainer.getElement());
+    }
+    // Array.from(filmsListTypes.topRated).forEach(() => render(new FilmCardView(data), this.filmsTopRatedListContainer.getElement()));
+    // Array.from(filmsListTypes.mostCommented).forEach(() => render(new FilmCardView(data), this.filmsMostCommentedListContainer.getElement()));
   }
 
-  detailsPopup(container) {
-    render(new FilmDetailsView(), container);
+  detailsPopup(container, film) {
+    render(new FilmDetailsView(film, this.getComments(film)), container);
   }
+
+  getComments(film) {
+    return this.data.comments.filter((comment) => film.comments.some((id) => comment.id === id));
+  }
+
+
 }
 
 export {FilmsPresenter};

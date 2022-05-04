@@ -4,19 +4,21 @@ import {FilterView} from './view/filter-view';
 import {SortView} from './view/sort-view';
 import {FilmsPresenter} from './presenter/films-presenter';
 import {FooterStatisticsView} from './view/footer-statistics-view';
+import {DataModel} from './model/model';
 
 const body = document.body;
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerStatisticsElement = document.querySelector('.footer__statistics');
-const mockData = {moviesCount: '130 291'};
+const dataModel = new DataModel();
+const data = dataModel.loadData();
 
 const filmsPresenter = new FilmsPresenter();
 
 render(new ProfileView(), headerElement);
 render(new FilterView(), mainElement);
 render(new SortView(), mainElement);
-render(new FooterStatisticsView(mockData.moviesCount), footerStatisticsElement);
+render(new FooterStatisticsView(data), footerStatisticsElement);
 
-filmsPresenter.init(mainElement);
-filmsPresenter.detailsPopup(body);
+filmsPresenter.init(mainElement, data);
+filmsPresenter.detailsPopup(body, data.films[0]);
