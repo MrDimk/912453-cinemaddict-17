@@ -87,38 +87,38 @@ class MockService {
     const isWatched = Boolean(Math.round(Math.random()));
 
     return {
-      'id': MockService.#counterID++,
-      'comments': this.comments.filter(() => Math.round(Math.random())).map((comment) => comment.id),
+      id: MockService.#counterID++,
+      comments: this.comments.filter(() => Math.round(Math.random())).map((comment) => comment.id),
       'film_info': {
-        'title': getMockFromArray(TITLES),
+        title: getMockFromArray(TITLES),
         'alternative_title': getMockFromArray(TITLES),
         'total_rating': ((randomInt(40, 100) / randomInt(10, 20)).toFixed(1)),
-        'poster': getMockFromArray(POSTERS),
+        poster: getMockFromArray(POSTERS),
         'age_rating': randomInt(0, 18),
-        'director': getMockFromArray(NAMES),
-        'writers': [
+        director: getMockFromArray(NAMES),
+        writers: [
           getMockFromArray(NAMES)
         ],
-        'actors': [
+        actors: [
           getMockFromArray(NAMES),
           getMockFromArray(NAMES),
         ],
-        'release': {
-          'date': getDateInPast(),
+        release: {
+          date: getDateInPast(),
           'release_country': getMockFromArray(COUNTRIES)
         },
-        'runtime': randomInt(60, 180),
-        'genre': [
+        runtime: randomInt(60, 180),
+        genre: [
           getMockFromArray(GENRES),
           getMockFromArray(GENRES)
         ],
-        'description': getMockText(4),
+        description: getMockText(4),
       },
       'user_details': {
-        'watchlist': !isWatched,
+        watchlist: !isWatched,
         'already_watched': isWatched,
         'watching_date': isWatched ? getDateInPast() : '',
-        'favorite': isWatched ? Boolean(Math.round(Math.random())) : false
+        favorite: isWatched ? Boolean(Math.round(Math.random())) : false
       }
     };
   }
