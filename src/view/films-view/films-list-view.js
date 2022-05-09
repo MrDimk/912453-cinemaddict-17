@@ -6,13 +6,15 @@ const createFilmListTemplate = (type) => `
 `;
 
 class FilmsListView extends View{
+  #type;
+
   constructor(type = '') {
     super();
-    this.type = type;
+    this.#type = type;
   }
 
   getTemplate() {
-    return createFilmListTemplate(this.type);
+    return createFilmListTemplate(this.#type);
   }
 }
 

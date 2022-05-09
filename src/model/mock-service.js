@@ -57,13 +57,20 @@ const getDateInPast = () => new Date(randomInt(1, 1600000000000)).toISOString();
 
 class MockService {
   static #counterID = 0;
+  #comments =[];
+  #films = [];
 
   constructor(filmsCount, commentsCount) {
-    this.comments = [];
-    Array.from({length: commentsCount}).forEach(() => this.comments.push(this.generateComment()));
+    Array.from({length: commentsCount}).forEach(() => this.#comments.push(this.generateComment()));
+    Array.from({length: filmsCount}).forEach(() => this.#films.push(this.generateFilmData()));
+  }
 
-    this.films = [];
-    Array.from({length: filmsCount}).forEach(() => this.films.push(this.generateFilmData()));
+  get comments() {
+    return this.#comments;
+  }
+
+  get films() {
+    return this.#films;
   }
 
   generateComment() {
