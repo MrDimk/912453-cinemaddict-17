@@ -23,27 +23,30 @@ class FilmDataAdapter {
   #age;
 
   constructor(filmData) {
-    this.#title = filmData['film_info'].title;
-    this.#rating = filmData['film_info']['total_rating'];
-    this.#releaseYear = dayjs(filmData['film_info'].release.date).format('YYYY');
-    this.#duration = this.formatDuration(filmData['film_info'].runtime);
-    this.#genre = filmData['film_info'].genre[0];
-    this.#poster = filmData['film_info'].poster;
-    this.#shortDescription = `${filmData['film_info'].description.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`;
+    const info = filmData['film_info'];
+    const details = filmData['user_details'];
+
+    this.#title = info.title;
+    this.#rating = info['total_rating'];
+    this.#releaseYear = dayjs(info.release.date).format('YYYY');
+    this.#duration = this.formatDuration(info.runtime);
+    this.#genre = info.genre[0];
+    this.#poster = info.poster;
+    this.#shortDescription = `${info.description.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`;
     this.#comments = this.formatCommentsCount(filmData.comments.length);
 
-    this.#watchlist = filmData['user_details'].watchlist;
-    this.#watched = filmData['user_details']['already_watched'];
-    this.favorite = filmData['user_details'].favorite;
+    this.#watchlist = details.watchlist;
+    this.#watched = details['already_watched'];
+    this.favorite = details.favorite;
 
-    this.#director = filmData['film_info'].director;
-    this.#writers = filmData['film_info'].writers.join(', ');
-    this.#actors = filmData['film_info'].actors.join(', ');
-    this.#releaseDate = dayjs(filmData['film_info'].release.date).format('D MMMM YYYY');
-    this.#country = filmData['film_info'].release['release_country'];
-    this.#genres = filmData['film_info'].genre;
-    this.#description = filmData['film_info'].description;
-    this.#age = filmData['film_info']['age_rating'];
+    this.#director = info.director;
+    this.#writers = info.writers.join(', ');
+    this.#actors = info.actors.join(', ');
+    this.#releaseDate = dayjs(info.release.date).format('D MMMM YYYY');
+    this.#country = info.release['release_country'];
+    this.#genres = info.genre;
+    this.#description = info.description;
+    this.#age = info['age_rating'];
   }
 
   get title () {

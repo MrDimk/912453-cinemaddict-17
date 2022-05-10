@@ -51,14 +51,14 @@ class FilmsListPresenter {
       this.#filmsList[count].showCard(this.#filmsListContainerView.element);
     }
     if (count < this.#filmsList.length) {
-      this.renderShoeMoreButton();
+      this.renderShowMoreButton();
     } else {
       this.removeShowMoreButton();
     }
     this.#cardsOnPageCounter = count;
   }
 
-  renderShoeMoreButton() {
+  renderShowMoreButton() {
     if (this.#showMoreButton) {
       this.removeShowMoreButton();
     }

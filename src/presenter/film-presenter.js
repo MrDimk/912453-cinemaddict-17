@@ -2,6 +2,7 @@ import {render} from '../render';
 import {FilmCardView} from '../view/films-view/film-card-view';
 import {FilmDataAdapter} from './film-data-adapter';
 import {FilmDetailsView} from '../view/films-view/film-details-view';
+import {EscKeyHandler} from '../util';
 
 // Управляет логикой одного фильма: паказ карточки и деталей, обработчики событий
 class FilmPresenter {
@@ -28,20 +29,13 @@ class FilmPresenter {
     render(this.#filmDetailsView, container);
     document.body.classList.add('hide-overflow');
     this.#filmDetailsView.element.querySelector('.film-details__close').addEventListener('click', () => this.onCloseDetails());
-    document.addEventListener('keydown', this.onEscKeydown);
+    EscKeyHandler.add(this.onCloseDetails);
   }
 
-  onCloseDetails() {
-    this.#filmDetailsView.element.remove();
+  onCloseDetails = () => {
     document.body.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', this.onEscKeydown);
-  }
-
-  onEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      this.onCloseDetails();
-    }
+    this.#filmDetailsView.element.remove();
+    EscKeyHandler.remove(this.onCloseDetails);
   };
 }
 
