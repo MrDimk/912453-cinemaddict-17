@@ -6,7 +6,6 @@ import {FilmsPresenter} from './presenter/films-presenter';
 import {FooterStatisticsView} from './view/footer-statistics-view';
 import {DataModel} from './model/model';
 
-const body = document.body;
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerStatisticsElement = document.querySelector('.footer__statistics');
@@ -21,4 +20,4 @@ render(new SortView(), mainElement);
 render(new FooterStatisticsView(data), footerStatisticsElement);
 
 filmsPresenter.init(mainElement, data);
-filmsPresenter.detailsPopup(body, data.films[0]);
+

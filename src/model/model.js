@@ -1,9 +1,8 @@
 import {MockService} from './mock-service';
 
-
 class DataModel {
   loadData() {
-    return new MockService(10, 6);
+    return new MockService(12, 6);
   }
 }
 

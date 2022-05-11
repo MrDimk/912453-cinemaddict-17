@@ -1,15 +1,17 @@
 import {createElement} from '../render';
 
 class View {
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  #element;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.getTemplate());
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
 

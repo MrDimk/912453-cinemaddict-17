@@ -5,9 +5,9 @@ const createFooterTemplate = (count) => `
 `;
 
 class FooterStatisticsView extends View{
-  constructor(count) {
+  constructor(data) {
     super();
-    this.filmsCount = count;
+    this.filmsCount = data.films.length;
   }
 
   getTemplate() {

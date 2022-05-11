@@ -6,8 +6,7 @@ const createFilmCardTemplate = (film) => {
   const watched = film.watched ? 'film-card__controls-item--active' : '';
   const favorite = film.favorite ? 'film-card__controls-item--active' : '';
 
-  return (
-    `
+  return (`
    <article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${film.title}</h3>
@@ -31,13 +30,15 @@ const createFilmCardTemplate = (film) => {
 };
 
 class FilmCardView extends View {
+  #data;
+
   constructor(filmData) {
     super();
-    this.data = filmData;
+    this.#data = filmData;
   }
 
   getTemplate() {
-    return createFilmCardTemplate(this.data);
+    return createFilmCardTemplate(this.#data);
   }
 }
 
