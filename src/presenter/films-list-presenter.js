@@ -5,6 +5,13 @@ import {FilmsTitleView} from '../view/films-view/films-list-title-view';
 import {FilmsListContainerView} from '../view/films-view/films-list-container-view';
 import {ShowMoreButtonView} from '../view/films-view/show-more-button-view';
 
+const EMPTY_LIST_MESSAGES = {
+  allMovies: 'There are no movies in our database',
+  watchlist: 'There are no movies to watch now',
+  history: 'There are no watched movies now',
+  favorites: 'There are no favorite movies now'
+};
+
 // Класс описывает списки фильмов на сайте, их заголовокб стильб содержимое и порядок его отображения
 class FilmsListPresenter {
   #filmsData;
@@ -19,6 +26,7 @@ class FilmsListPresenter {
   #filmsListView;
   #isHidden;
   #showMoreButton = null;
+  #filter = null;
 
   constructor(data, container, title = '', isHidden = false, cardsPerPage = 5, type = '') {
     this.#filmsData = data.films;
@@ -75,6 +83,18 @@ class FilmsListPresenter {
   }
 
   renderTitle(titleText = this.#title, isHidden = this.#isHidden) {
+    // Заголовок будем визуализировать при инициализации а также при каждом применении фильтра можно выдавать релевантное сообщение
+    // поэтому проверку на пустой список лучше прямо тут реализовать
+    // пока предусматриваем только один "case", а проверку только на пустой #filmsList,
+    // при реализации фильтров будем дополнять логику
+    if (this.#filmsList.length === 0) {
+      isHidden = false;
+      switch (this.#filter) {
+        case null:
+          titleText = EMPTY_LIST_MESSAGES.allMovies;
+          break;
+      }
+    }
     if (this.#titleView) {
       this.#titleView.removeElement();
     }
