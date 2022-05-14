@@ -1,5 +1,5 @@
-import {View} from '../view';
 import dayjs from 'dayjs';
+import AbstractView from '../../framework/view/abstract-view';
 
 const createFilmDetailsTemplate = (film, comments) => {
   const watchlist = film.watchlist ? 'film-details__control-button--active' : '';
@@ -145,9 +145,10 @@ const createFilmDetailsTemplate = (film, comments) => {
   `);
 };
 
-class FilmDetailsView extends View {
+class FilmDetailsView extends AbstractView {
   #film;
   #comments;
+  #callback = {};
 
   constructor(film, comments) {
     super();
@@ -155,9 +156,24 @@ class FilmDetailsView extends View {
     this.#comments = comments;
   }
 
-  getTemplate() {
+  get template() {
     return createFilmDetailsTemplate(this.#film, this.#comments);
   }
+
+  removeElement() {
+    this.element.remove();
+    super.removeElement();
+  }
+
+  setCloseButtonClickHandler(callback) {
+    this.#callback.closeButtonClick = callback;
+    this.element.querySelector('.film-details__close').addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
+  }
+
+  #onCloseButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#callback.closeButtonClick();
+  };
 }
 
 export {FilmDetailsView};

@@ -1,4 +1,5 @@
-import {render, RenderPosition} from '../render';
+import {render, RenderPosition} from '../framework/render';
+
 import {FilmPresenter} from './film-presenter';
 import {FilmsListView} from '../view/films-view/films-list-view';
 import {FilmsTitleView} from '../view/films-view/films-list-title-view';
@@ -53,31 +54,30 @@ class FilmsListPresenter {
     }
   }
 
-  renderFilmsCards(countMore = this.#cardsPerPage) {
+  renderFilmsCards = (countMore = this.#cardsPerPage) => {
     let count = this.#cardsOnPageCounter;
     for (count; (count < this.#cardsOnPageCounter + countMore) && (count < this.#filmsList.length); count++) {
       this.#filmsList[count].showCard(this.#filmsListContainerView.element);
     }
     if (count < this.#filmsList.length) {
-      this.renderShowMoreButton();
+      this.#renderShowMoreButton();
     } else {
-      this.removeShowMoreButton();
+      this.#removeShowMoreButton();
     }
     this.#cardsOnPageCounter = count;
-  }
+  };
 
-  renderShowMoreButton() {
+  #renderShowMoreButton() {
     if (this.#showMoreButton) {
-      this.removeShowMoreButton();
+      this.#removeShowMoreButton();
     }
     this.#showMoreButton = new ShowMoreButtonView();
     render(this.#showMoreButton, this.#filmsListView.element);
-    this.#showMoreButton.element.addEventListener('click', () => this.renderFilmsCards());
+    this.#showMoreButton.setOnClickHandler(this.renderFilmsCards);
   }
 
-  removeShowMoreButton() {
+  #removeShowMoreButton() {
     if (this.#showMoreButton) {
-      this.#showMoreButton.element.remove();
       this.#showMoreButton.removeElement();
     }
   }

@@ -1,11 +1,11 @@
-import {View} from '../view';
+import AbstractView from '../../framework/view/abstract-view';
 
 const createFilmListTemplate = (type) => `
     <section class="films-list ${type ? type : ''}">
     </section>
 `;
 
-class FilmsListView extends View{
+class FilmsListView extends AbstractView{
   #type;
 
   constructor(type = '') {
@@ -13,7 +13,7 @@ class FilmsListView extends View{
     this.#type = type;
   }
 
-  getTemplate() {
+  get template() {
     return createFilmListTemplate(this.#type);
   }
 }

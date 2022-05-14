@@ -57,7 +57,7 @@ const getDateInPast = () => new Date(randomInt(1, 1600000000000)).toISOString();
 
 class MockService {
   static #counterID = 0;
-  #comments =[];
+  #comments = [];
   #films = [];
 
   constructor(filmsCount, commentsCount) {
