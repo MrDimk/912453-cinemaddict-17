@@ -1,4 +1,4 @@
-import {View} from '../view';
+import AbstractView from '../../framework/view/abstract-view';
 
 const createFilmCardTemplate = (film) => {
 
@@ -29,7 +29,7 @@ const createFilmCardTemplate = (film) => {
 `);
 };
 
-class FilmCardView extends View {
+class FilmCardView extends AbstractView {
   #data;
 
   constructor(filmData) {
@@ -37,7 +37,7 @@ class FilmCardView extends View {
     this.#data = filmData;
   }
 
-  getTemplate() {
+  get template() {
     return createFilmCardTemplate(this.#data);
   }
 }

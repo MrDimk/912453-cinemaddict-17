@@ -1,4 +1,4 @@
-import {render} from '../render';
+import {render} from '../framework/render';
 import {FilmsView} from '../view/films-view/films-view';
 import {FilmsListPresenter} from './films-list-presenter';
 

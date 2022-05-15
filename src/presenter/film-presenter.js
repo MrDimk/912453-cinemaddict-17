@@ -1,4 +1,4 @@
-import {render} from '../render';
+import {render} from '../framework/render';
 import {FilmCardView} from '../view/films-view/film-card-view';
 import {FilmDataAdapter} from './film-data-adapter';
 import {FilmDetailsView} from '../view/films-view/film-details-view';
@@ -28,14 +28,14 @@ class FilmPresenter {
   showDetails(container){
     render(this.#filmDetailsView, container);
     document.body.classList.add('hide-overflow');
-    this.#filmDetailsView.element.querySelector('.film-details__close').addEventListener('click', () => this.onCloseDetails());
-    EscKeyHandler.add(this.onCloseDetails);
+    this.#filmDetailsView.setCloseButtonClickHandler(this.#onCloseDetails);
+    EscKeyHandler.add(this.#onCloseDetails);
   }
 
-  onCloseDetails = () => {
+  #onCloseDetails = () => {
     document.body.classList.remove('hide-overflow');
     this.#filmDetailsView.element.remove();
-    EscKeyHandler.remove(this.onCloseDetails);
+    EscKeyHandler.remove(this.#onCloseDetails);
   };
 }
 

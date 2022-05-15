@@ -1,13 +1,13 @@
-import {View} from '../view';
+import AbstractView from '../../framework/view/abstract-view';
 
 const createFilmsListContainerTemplate = () => '<div class="films-list__container"></div>';
 
-class FilmsListContainerView extends View {
+class FilmsListContainerView extends AbstractView {
   constructor() {
     super();
   }
 
-  getTemplate() {
+  get template() {
     return createFilmsListContainerTemplate();
   }
 }
