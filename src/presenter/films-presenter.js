@@ -23,6 +23,10 @@ const filmsListTypes = {
 class FilmsPresenter {
   #filmsContent;
   #data;
+  #profilePresenter;
+  #filterPresenter;
+  #sortPresenter;
+  #footerPresenter;
 
   constructor() {
     this.#filmsContent = new FilmsView();

@@ -59,10 +59,15 @@ class MockService {
   static #counterID = 0;
   #comments = [];
   #films = [];
+  #userData = {name: 'Movie Buff', avatar: 'http://localhost:8080/images/bitmap@2x.png'};
 
   constructor(filmsCount, commentsCount) {
     Array.from({length: commentsCount}).forEach(() => this.#comments.push(this.generateComment()));
     Array.from({length: filmsCount}).forEach(() => this.#films.push(this.generateFilmData()));
+  }
+
+  get userData() {
+    return this.#userData;
   }
 
   get comments() {
