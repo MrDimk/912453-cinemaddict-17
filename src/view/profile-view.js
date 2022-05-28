@@ -7,7 +7,7 @@ const createNewProfileElement = ({name, avatar}) => `
   </section>
 `;
 
-class ProfileView extends AbstractView {
+export default class ProfileView extends AbstractView {
   #profile;
   constructor(profile) {
     super();
@@ -18,5 +18,3 @@ class ProfileView extends AbstractView {
     return createNewProfileElement(this.#profile);
   }
 }
-
-export {ProfileView};

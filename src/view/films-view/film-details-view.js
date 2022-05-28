@@ -145,35 +145,110 @@ const createFilmDetailsTemplate = (film, comments) => {
   `);
 };
 
-class FilmDetailsView extends AbstractView {
+export default class FilmDetailsView extends AbstractView {
+  static #currentDetailsPopup = null;
+
   #film;
   #comments;
   #callback = {};
+  #buttons = {};
+
+  static set currentDetailsPopup(instanse) {
+    this.#currentDetailsPopup = instanse;
+  }
+
+  static get currentDetailsPopup() {
+    return FilmDetailsView.#currentDetailsPopup;
+  }
+
+  static clearCurrentDetailsPopup() {
+    this.#currentDetailsPopup = null;
+  }
 
   constructor(film, comments) {
     super();
     this.#film = film;
     this.#comments = comments;
+    this.#buttons = {
+      close: this.element.querySelector('.film-details__close'),
+      watchlist: this.element.querySelector('.film-details__control-button--watchlist'),
+      watched: this.element.querySelector('.film-details__control-button--watched'),
+      favorite: this.element.querySelector('.film-details__control-button--favorite')
+    };
   }
 
   get template() {
     return createFilmDetailsTemplate(this.#film, this.#comments);
   }
 
-  removeElement() {
-    this.element.remove();
-    super.removeElement();
+  render() {
+
   }
 
+  // Назначение внешних обработчиков событий
   setCloseButtonClickHandler(callback) {
     this.#callback.closeButtonClick = callback;
-    this.element.querySelector('.film-details__close').addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
+    this.#buttons.close.addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
   }
 
+  setWatchlistChangeHandler(callback) {
+    this.#callback.watchlistChange = callback;
+    this.#buttons.watchlist.addEventListener('click', (evt) => this.#onWatchlistClick(evt));
+  }
+
+  setWatchedChangeHandler(callback) {
+    this.#callback.watchedChange = callback;
+    this.#buttons.watched.addEventListener('click', (evt) => this.#onWatchedClick(evt));
+  }
+
+  setFavoriteChangeHandler(callback) {
+    this.#callback.favoriteChange = callback;
+    this.#buttons.favorite.addEventListener('click', (evt) => this.#onFavoriteClick(evt));
+  }
+
+  // Выполнение сторонних обработчиков событий
   #onCloseButtonClick = (evt) => {
     evt.preventDefault();
     this.#callback.closeButtonClick();
   };
-}
 
-export {FilmDetailsView};
+  #onWatchlistClick = (evt) => {
+    evt.preventDefault();
+    this.#callback.watchlistChange();
+  };
+
+  #onWatchedClick = (evt) => {
+    evt.preventDefault();
+    this.#callback.watchedChange();
+  };
+
+  #onFavoriteClick = (evt) => {
+    evt.preventDefault();
+    this.#callback.favoriteChange();
+  };
+
+  // Методы изменения отображения компонента
+  watchlistButtonOn() {
+    this.#buttons.watchlist.classList.add('film-details__control-button--active');
+  }
+
+  watchedButtonOn() {
+    this.#buttons.watched.classList.add('film-details__control-button--active');
+  }
+
+  favoriteButtonOn() {
+    this.#buttons.favorite.classList.add('film-details__control-button--active');
+  }
+
+  watchlistButtonOff() {
+    this.#buttons.watchlist.classList.remove('film-details__control-button--active');
+  }
+
+  watchedButtonOff() {
+    this.#buttons.watched.classList.remove('film-details__control-button--active');
+  }
+
+  favoriteButtonOff() {
+    this.#buttons.favorite.classList.remove('film-details__control-button--active');
+  }
+}

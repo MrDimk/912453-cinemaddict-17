@@ -55,7 +55,7 @@ const getMockText = (sentencesCount) => Array.from({length: sentencesCount}).red
 const getMockFromArray = (array) => array[randomInt(0, array.length - 1)];
 const getDateInPast = () => new Date(randomInt(1, 1600000000000)).toISOString();
 
-class MockService {
+export default class MockService {
   static #counterID = 0;
   #comments = [];
   #films = [];
@@ -136,4 +136,3 @@ class MockService {
   }
 }
 
-export {MockService};

@@ -11,7 +11,7 @@ const createFilterTemplate = (counters) => `
     </nav>
 `;
 
-class FilterView extends AbstractView {
+export default class FilterView extends AbstractView {
   #counters;
   constructor(counters) {
     super();
@@ -22,5 +22,3 @@ class FilterView extends AbstractView {
     return createFilterTemplate(this.#counters);
   }
 }
-
-export {FilterView};

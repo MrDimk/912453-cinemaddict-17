@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 const DESCRIPTION_MAX_LENGTH = 140;
 
-class FilmDataAdapter {
+export default class FilmDataAdapter {
   #title;
   #rating;
   #releaseYear;
@@ -13,6 +13,7 @@ class FilmDataAdapter {
   #comments;
   #watchlist;
   #watched;
+  #favorite;
   #director;
   #writers;
   #actors;
@@ -37,7 +38,7 @@ class FilmDataAdapter {
 
     this.#watchlist = details.watchlist;
     this.#watched = details['already_watched'];
-    this.favorite = details.favorite;
+    this.#favorite = details.favorite;
 
     this.#director = info.director;
     this.#writers = info.writers.join(', ');
@@ -49,76 +50,92 @@ class FilmDataAdapter {
     this.#age = info['age_rating'];
   }
 
-  get title () {
+  get title() {
     return this.#title;
   }
 
-  get rating () {
+  get rating() {
     return this.#rating;
   }
 
-  get releaseYear () {
+  get releaseYear() {
     return this.#releaseYear;
   }
 
-  get duration () {
+  get duration() {
     return this.#duration;
   }
 
-  get genre () {
+  get genre() {
     return this.#genre;
   }
 
-  get poster () {
+  get poster() {
     return this.#poster;
   }
 
-  get shortDescription () {
+  get shortDescription() {
     return this.#shortDescription;
   }
 
-  get comments () {
+  get comments() {
     return this.#comments;
   }
 
-  get watchlist () {
+  get watchlist() {
     return this.#watchlist;
   }
 
-  get watched () {
+  get watched() {
     return this.#watched;
   }
 
-  get director () {
+  get favorite() {
+    return this.#favorite;
+  }
+
+  get director() {
     return this.#director;
   }
 
-  get writers () {
+  get writers() {
     return this.#writers;
   }
 
-  get actors () {
+  get actors() {
     return this.#actors;
   }
 
-  get releaseDate () {
+  get releaseDate() {
     return this.#releaseDate;
   }
 
-  get country () {
+  get country() {
     return this.#country;
   }
 
-  get genres () {
+  get genres() {
     return this.#genres;
   }
 
-  get description () {
+  get description() {
     return this.#description;
   }
 
-  get age () {
+  get age() {
     return this.#age;
+  }
+
+  set watchlist(newState) {
+    this.#watchlist = newState;
+  }
+
+  set watched(newState) {
+    this.#watched = newState;
+  }
+
+  set favorite(newState) {
+    this.#favorite = newState;
   }
 
   formatDuration(minutes) {
@@ -131,5 +148,3 @@ class FilmDataAdapter {
     return commentsCount === 1 ? `${commentsCount} comment` : `${commentsCount} comments`;
   }
 }
-
-export {FilmDataAdapter};

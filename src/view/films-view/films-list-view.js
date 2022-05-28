@@ -5,7 +5,7 @@ const createFilmListTemplate = (type) => `
     </section>
 `;
 
-class FilmsListView extends AbstractView{
+export default class FilmsListView extends AbstractView {
   #type;
 
   constructor(type = '') {
@@ -17,5 +17,3 @@ class FilmsListView extends AbstractView{
     return createFilmListTemplate(this.#type);
   }
 }
-
-export {FilmsListView};

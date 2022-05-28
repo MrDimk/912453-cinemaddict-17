@@ -1,7 +1,7 @@
-import {SortView} from '../view/sort-view';
+import SortView from '../view/sort-view';
 import {render} from '../framework/render';
 
-class SortPresenter {
+export default class SortPresenter {
   #sortView;
   constructor() {
     this.#sortView = new SortView();
@@ -12,4 +12,3 @@ class SortPresenter {
   }
 }
 
-export {SortPresenter};

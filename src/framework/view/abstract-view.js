@@ -46,8 +46,11 @@ export default class AbstractView {
 
   /** Метод для удаления элемента */
   removeElement() {
-    this.#element.remove();
     this.#element = null;
+  }
+
+  removeFromDOM() {
+    this.element.remove();
   }
 
   /**

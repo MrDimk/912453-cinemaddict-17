@@ -1,6 +1,6 @@
-import {MockService} from './mock-service';
+import MockService from './mock-service';
 
-class DataModel {
+export default class DataModel {
   #data;
 
   loadData() {
@@ -14,5 +14,3 @@ class DataModel {
     return this.#data.userData;
   }
 }
-
-export {DataModel};
