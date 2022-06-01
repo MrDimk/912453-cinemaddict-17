@@ -19,13 +19,8 @@ export default class FilmPresenter {
     this.#filmCardView = new FilmCardView(this.#filmData);
     this.#filmDetailsView = new FilmDetailsView(this.#filmData, this.#comments);
 
-    this.#filmCardView.setWatchlistChangeHandler(this.#onWatchlistChange);
-    this.#filmCardView.setWatchedChangeHandler(this.#onWatchedChange);
-    this.#filmCardView.setFavoriteChangeHandler(this.#onFavoriteChange);
-
-    this.#filmDetailsView.setWatchlistChangeHandler(this.#onWatchlistChange);
-    this.#filmDetailsView.setWatchedChangeHandler(this.#onWatchedChange);
-    this.#filmDetailsView.setFavoriteChangeHandler(this.#onFavoriteChange);
+    this.#filmCardView.setControlChangeHandler(this.#onControlChange);
+    this.#filmDetailsView.setControlChangeHandler(this.#onControlChange);
   }
 
   showCard() {
@@ -55,39 +50,10 @@ export default class FilmPresenter {
     EscKeyHandler.remove(this.#onCloseDetails);
   };
 
-  #onWatchlistChange = () => {
-    if (this.#filmData.watchlist) {
-      this.#filmData.watchlist = false;
-      this.#filmDetailsView.watchlistButtonOff();
-      this.#filmCardView.watchlistButtonOff();
-    } else {
-      this.#filmData.watchlist = true;
-      this.#filmDetailsView.watchlistButtonOn();
-      this.#filmCardView.watchlistButtonOn();
-    }
-  };
-
-  #onWatchedChange = () => {
-    if (this.#filmData.watched) {
-      this.#filmData.watched = false;
-      this.#filmDetailsView.watchedButtonOff();
-      this.#filmCardView.watchedButtonOff();
-    } else {
-      this.#filmData.watched = true;
-      this.#filmDetailsView.watchedButtonOn();
-      this.#filmCardView.watchedButtonOn();
-    }
-  };
-
-  #onFavoriteChange = () => {
-    if (this.#filmData.favorite) {
-      this.#filmData.favorite = false;
-      this.#filmDetailsView.favoriteButtonOff();
-      this.#filmCardView.favoriteButtonOff();
-    } else {
-      this.#filmData.favorite = true;
-      this.#filmDetailsView.favoriteButtonOn();
-      this.#filmCardView.favoriteButtonOn();
-    }
+  #onControlChange = (controlType) => {
+    const newState = !this.#filmData[controlType];
+    this.#filmData[controlType] = newState;
+    this.#filmCardView.switchState(this.#filmCardView.buttons[controlType], newState);
+    this.#filmDetailsView.switchState(this.#filmDetailsView.buttons[controlType], newState);
   };
 }

@@ -53,6 +53,14 @@ export default class AbstractView {
     this.element.remove();
   }
 
+  switchState(element, switchOn, additionalClass) {
+    if (switchOn) {
+      element.classList.add(additionalClass);
+    } else {
+      element.classList.remove(additionalClass);
+    }
+  }
+
   /**
    * Метод, реализующий эффект "покачивания головой"
    * @param {shakeCallback} [callback] Функция, которая будет вызвана после завершения анимации

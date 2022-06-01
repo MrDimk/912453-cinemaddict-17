@@ -1,10 +1,20 @@
 import AbstractView from '../../framework/view/abstract-view';
 
-const createFilmCardTemplate = (film) => {
+const CLASSES = {
+  STATE: {
+    ACTIVE: 'film-card__controls-item--active'
+  },
+  FILM_CONTROLS: {
+    watchlist: 'film-card__controls-item--add-to-watchlist',
+    watched: 'film-card__controls-item--mark-as-watched',
+    favorite: 'film-card__controls-item--favorite'
+  }
+};
 
-  const watchlist = film.watchlist ? 'film-card__controls-item--active' : '';
-  const watched = film.watched ? 'film-card__controls-item--active' : '';
-  const favorite = film.favorite ? 'film-card__controls-item--active' : '';
+const createFilmCardTemplate = (film) => {
+  const watchlist = film.watchlist ? CLASSES.STATE.ACTIVE : '';
+  const watched = film.watched ? CLASSES.STATE.ACTIVE : '';
+  const favorite = film.favorite ? CLASSES.STATE.ACTIVE : '';
 
   return (`
    <article class="film-card">
@@ -37,73 +47,36 @@ export default class FilmCardView extends AbstractView {
   constructor(filmData) {
     super();
     this.#data = filmData;
-    this.#buttons = {
-      close: this.element.querySelector('.film-details__close'),
-      watchlist: this.element.querySelector('.film-card__controls-item--add-to-watchlist'),
-      watched: this.element.querySelector('.film-card__controls-item--mark-as-watched'),
-      favorite: this.element.querySelector('.film-card__controls-item--favorite')
-    };
+    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
+      this.#buttons[control] = this.element.querySelector(`.${CLASSES.FILM_CONTROLS[control]}`);
+    });
   }
 
   get template() {
     return createFilmCardTemplate(this.#data);
   }
 
+  get buttons() {
+    return this.#buttons;
+  }
+
   // Назначение внешних обработчиков событий
-  setWatchlistChangeHandler(callback) {
-    this.#callback.watchlistChange = callback;
-    this.#buttons.watchlist.addEventListener('click', (evt) => this.#onWatchlistClick(evt));
-  }
-
-  setWatchedChangeHandler(callback) {
-    this.#callback.watchedChange = callback;
-    this.#buttons.watched.addEventListener('click', (evt) => this.#onWatchedClick(evt));
-  }
-
-  setFavoriteChangeHandler(callback) {
-    this.#callback.favoriteChange = callback;
-    this.#buttons.favorite.addEventListener('click', (evt) => this.#onFavoriteClick(evt));
+  setControlChangeHandler(callback) {
+    this.#callback.controlChange = callback;
+    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
+      this.#buttons[control].addEventListener('click', (evt) => this.#onControlButtonClick(evt, control));
+    });
   }
 
   // Выполнение сторонних обработчиков событий
-  #onWatchlistClick = (evt) => {
+  #onControlButtonClick = (evt, control) => {
     evt.preventDefault();
-    this.#callback.watchlistChange();
-  };
-
-  #onWatchedClick = (evt) => {
-    evt.preventDefault();
-    this.#callback.watchedChange();
-  };
-
-  #onFavoriteClick = (evt) => {
-    evt.preventDefault();
-    this.#callback.favoriteChange();
+    this.#callback.controlChange(control);
   };
 
   // Методы изменения отображения компонента
-  watchlistButtonOn() {
-    this.#buttons.watchlist.classList.add('film-card__controls-item--active');
-  }
-
-  watchedButtonOn() {
-    this.#buttons.watched.classList.add('film-card__controls-item--active');
-  }
-
-  favoriteButtonOn() {
-    this.#buttons.favorite.classList.add('film-card__controls-item--active');
-  }
-
-  watchlistButtonOff() {
-    this.#buttons.watchlist.classList.remove('film-card__controls-item--active');
-  }
-
-  watchedButtonOff() {
-    this.#buttons.watched.classList.remove('film-card__controls-item--active');
-  }
-
-  favoriteButtonOff() {
-    this.#buttons.favorite.classList.remove('film-card__controls-item--active');
+  switchState(element, switchOn) {
+    super.switchState(element, switchOn, CLASSES.STATE.ACTIVE);
   }
 }
 
