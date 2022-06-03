@@ -1,7 +1,7 @@
-import {ProfileView} from '../view/profile-view';
+import ProfileView from '../view/profile-view';
 import {render} from '../framework/render';
 
-class ProfilePresenter {
+export default class ProfilePresenter {
   #profile;
   #profileView;
   constructor(user) {
@@ -14,4 +14,3 @@ class ProfilePresenter {
   }
 }
 
-export {ProfilePresenter};

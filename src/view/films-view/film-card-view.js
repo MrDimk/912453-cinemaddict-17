@@ -1,10 +1,20 @@
 import AbstractView from '../../framework/view/abstract-view';
 
-const createFilmCardTemplate = (film) => {
+const CLASSES = {
+  STATE: {
+    ACTIVE: 'film-card__controls-item--active'
+  },
+  FILM_CONTROLS: {
+    watchlist: 'film-card__controls-item--add-to-watchlist',
+    watched: 'film-card__controls-item--mark-as-watched',
+    favorite: 'film-card__controls-item--favorite'
+  }
+};
 
-  const watchlist = film.watchlist ? 'film-card__controls-item--active' : '';
-  const watched = film.watched ? 'film-card__controls-item--active' : '';
-  const favorite = film.favorite ? 'film-card__controls-item--active' : '';
+const createFilmCardTemplate = (film) => {
+  const watchlist = film.watchlist ? CLASSES.STATE.ACTIVE : '';
+  const watched = film.watched ? CLASSES.STATE.ACTIVE : '';
+  const favorite = film.favorite ? CLASSES.STATE.ACTIVE : '';
 
   return (`
    <article class="film-card">
@@ -29,17 +39,44 @@ const createFilmCardTemplate = (film) => {
 `);
 };
 
-class FilmCardView extends AbstractView {
+export default class FilmCardView extends AbstractView {
   #data;
+  #callback = {};
+  #buttons = {};
 
   constructor(filmData) {
     super();
     this.#data = filmData;
+    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
+      this.#buttons[control] = this.element.querySelector(`.${CLASSES.FILM_CONTROLS[control]}`);
+    });
   }
 
   get template() {
     return createFilmCardTemplate(this.#data);
   }
+
+  get buttons() {
+    return this.#buttons;
+  }
+
+  // Назначение внешних обработчиков событий
+  setControlChangeHandler(callback) {
+    this.#callback.controlChange = callback;
+    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
+      this.#buttons[control].addEventListener('click', (evt) => this.#onControlButtonClick(evt, control));
+    });
+  }
+
+  // Выполнение сторонних обработчиков событий
+  #onControlButtonClick = (evt, control) => {
+    evt.preventDefault();
+    this.#callback.controlChange(control);
+  };
+
+  // Методы изменения отображения компонента
+  switchState(element, switchOn) {
+    super.switchState(element, switchOn, CLASSES.STATE.ACTIVE);
+  }
 }
 
-export {FilmCardView};

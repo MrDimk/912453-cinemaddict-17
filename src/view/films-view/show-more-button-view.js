@@ -2,7 +2,7 @@ import AbstractView from '../../framework/view/abstract-view';
 
 const createShowMoreButtonTemplate = () => '<button class="films-list__show-more">Show more</button>';
 
-class ShowMoreButtonView extends AbstractView {
+export default class ShowMoreButtonView extends AbstractView {
   #callback = {};
   constructor() {
     super();
@@ -23,4 +23,3 @@ class ShowMoreButtonView extends AbstractView {
   };
 }
 
-export {ShowMoreButtonView};

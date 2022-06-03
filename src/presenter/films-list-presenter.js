@@ -1,10 +1,9 @@
 import {render, RenderPosition} from '../framework/render';
-
-import {FilmPresenter} from './film-presenter';
-import {FilmsListView} from '../view/films-view/films-list-view';
-import {FilmsTitleView} from '../view/films-view/films-list-title-view';
-import {FilmsListContainerView} from '../view/films-view/films-list-container-view';
-import {ShowMoreButtonView} from '../view/films-view/show-more-button-view';
+import FilmPresenter from './film-presenter';
+import FilmsListView from '../view/films-view/films-list-view';
+import FilmsTitleView from '../view/films-view/films-list-title-view';
+import FilmsListContainerView from '../view/films-view/films-list-container-view';
+import ShowMoreButtonView from '../view/films-view/show-more-button-view';
 
 const EMPTY_LIST_MESSAGES = {
   allMovies: 'There are no movies in our database',
@@ -13,8 +12,8 @@ const EMPTY_LIST_MESSAGES = {
   favorites: 'There are no favorite movies now'
 };
 
-// Класс описывает списки фильмов на сайте, их заголовокб стильб содержимое и порядок его отображения
-class FilmsListPresenter {
+// Класс описывает списки фильмов на сайте, их заголовок, стиль, содержимое и порядок его отображения
+export default class FilmsListPresenter {
   #filmsData;
   #comments;
   #title;
@@ -50,14 +49,14 @@ class FilmsListPresenter {
   createFilmsList(filmsData, comments) {
     for (let i = 0; i < this.#filmsData.length; i++) {
       const filmComments = comments.filter((comment) => this.#filmsData[i].comments.some((id) => comment.id === id));
-      this.#filmsList.push(new FilmPresenter(filmsData[i], filmComments ));
+      this.#filmsList.push(new FilmPresenter(filmsData[i], filmComments, this.#filmsListContainerView.element));
     }
   }
 
   renderFilmsCards = (countMore = this.#cardsPerPage) => {
     let count = this.#cardsOnPageCounter;
     for (count; (count < this.#cardsOnPageCounter + countMore) && (count < this.#filmsList.length); count++) {
-      this.#filmsList[count].showCard(this.#filmsListContainerView.element);
+      this.#filmsList[count].showCard();
     }
     if (count < this.#filmsList.length) {
       this.#renderShowMoreButton();
@@ -78,7 +77,7 @@ class FilmsListPresenter {
 
   #removeShowMoreButton() {
     if (this.#showMoreButton) {
-      this.#showMoreButton.removeElement();
+      this.#showMoreButton.removeFromDOM();
     }
   }
 
@@ -102,5 +101,3 @@ class FilmsListPresenter {
     render(this.#titleView, this.#filmsListContainerView.element, RenderPosition.BEFOREBEGIN);
   }
 }
-
-export {FilmsListPresenter};

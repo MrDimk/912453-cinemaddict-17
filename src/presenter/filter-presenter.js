@@ -1,7 +1,7 @@
-import {FilterView} from '../view/filter-view';
+import FilterView from '../view/filter-view';
 import {render} from '../framework/render';
 
-class FilterPresenter {
+export default class FilterPresenter {
   #data;
   #filterView;
   #counters = {};
@@ -30,4 +30,3 @@ class FilterPresenter {
   }
 }
 
-export {FilterPresenter};

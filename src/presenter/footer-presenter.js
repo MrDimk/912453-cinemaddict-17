@@ -1,7 +1,7 @@
 import {render} from '../framework/render';
-import {FooterStatisticsView} from '../view/footer-statistics-view';
+import FooterStatisticsView from '../view/footer-statistics-view';
 
-class FooterPresenter {
+export default class FooterPresenter {
   #counter;
   #footerStatisticsView;
 
@@ -15,4 +15,3 @@ class FooterPresenter {
   }
 }
 
-export {FooterPresenter};

@@ -1,5 +1,5 @@
 
-class EscKeyHandler {
+export default class EscKeyHandler {
   static #handlers = new Set();
 
   static get handlers() {
@@ -27,5 +27,3 @@ class EscKeyHandler {
     }
   }
 }
-
-export {EscKeyHandler};

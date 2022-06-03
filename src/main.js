@@ -1,9 +1,9 @@
-import {FilmsPresenter} from './presenter/films-presenter';
-import {DataModel} from './model/model';
-import {ProfilePresenter} from './presenter/profile-presenter';
-import {FilterPresenter} from './presenter/filter-presenter';
-import {SortPresenter} from './presenter/sort-presenter';
-import {FooterPresenter} from './presenter/footer-presenter';
+import FilmsPresenter from './presenter/films-presenter';
+import DataModel from './model/model';
+import ProfilePresenter from './presenter/profile-presenter';
+import FilterPresenter from './presenter/filter-presenter';
+import SortPresenter from './presenter/sort-presenter';
+import FooterPresenter from './presenter/footer-presenter';
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');

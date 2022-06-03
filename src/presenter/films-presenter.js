@@ -1,6 +1,6 @@
 import {render} from '../framework/render';
-import {FilmsView} from '../view/films-view/films-view';
-import {FilmsListPresenter} from './films-list-presenter';
+import FilmsView from '../view/films-view/films-view';
+import FilmsListPresenter from './films-list-presenter';
 
 const filmsListTypes = {
   main: {
@@ -20,13 +20,9 @@ const filmsListTypes = {
   }
 };
 
-class FilmsPresenter {
+export default class FilmsPresenter {
   #filmsContent;
   #data;
-  #profilePresenter;
-  #filterPresenter;
-  #sortPresenter;
-  #footerPresenter;
 
   constructor() {
     this.#filmsContent = new FilmsView();
@@ -71,5 +67,3 @@ class FilmsPresenter {
       filmsListTypes.mostCommented.class);
   }
 }
-
-export {FilmsPresenter};

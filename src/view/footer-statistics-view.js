@@ -4,7 +4,7 @@ const createFooterTemplate = (count) => `
   <p>${count} movies inside</p>
 `;
 
-class FooterStatisticsView extends AbstractView {
+export default class FooterStatisticsView extends AbstractView {
   #filmsCount;
 
   constructor(counter) {
@@ -16,5 +16,3 @@ class FooterStatisticsView extends AbstractView {
     return createFooterTemplate(this.#filmsCount);
   }
 }
-
-export {FooterStatisticsView};

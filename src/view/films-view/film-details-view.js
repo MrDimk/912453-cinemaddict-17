@@ -1,10 +1,22 @@
 import dayjs from 'dayjs';
 import AbstractView from '../../framework/view/abstract-view';
 
+const CLASSES = {
+  STATE: {
+    ACTIVE: 'film-details__control-button--active'
+  },
+  FILM_CONTROLS: {
+    watchlist: 'film-details__control-button--watchlist',
+    watched: 'film-details__control-button--watched',
+    favorite: 'film-details__control-button--favorite'
+  },
+  CLOSE_BUTTON: 'film-details__close'
+};
+
 const createFilmDetailsTemplate = (film, comments) => {
-  const watchlist = film.watchlist ? 'film-details__control-button--active' : '';
-  const watched = film.watched ? 'film-details__control-button--active' : '';
-  const favorite = film.favorite ? 'film-details__control-button--active' : '';
+  const watchlist = film.watchlist ? CLASSES.STATE.ACTIVE : '';
+  const watched = film.watched ? CLASSES.STATE.ACTIVE : '';
+  const favorite = film.favorite ? CLASSES.STATE.ACTIVE : '';
 
   const genres = [];
   film.genres.forEach((genre) => genres.push(`<span class="film-details__genre">${genre}</span>`));
@@ -145,35 +157,70 @@ const createFilmDetailsTemplate = (film, comments) => {
   `);
 };
 
-class FilmDetailsView extends AbstractView {
+export default class FilmDetailsView extends AbstractView {
+  static #currentDetailsPopup = null;
+
   #film;
   #comments;
   #callback = {};
+  #buttons = {};
+
+  static set currentDetailsPopup(instanse) {
+    this.#currentDetailsPopup = instanse;
+  }
+
+  static get currentDetailsPopup() {
+    return FilmDetailsView.#currentDetailsPopup;
+  }
+
+  static clearCurrentDetailsPopup() {
+    this.#currentDetailsPopup = null;
+  }
 
   constructor(film, comments) {
     super();
     this.#film = film;
     this.#comments = comments;
+    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
+      this.#buttons[control] = this.element.querySelector(`.${CLASSES.FILM_CONTROLS[control]}`);
+    });
+    this.#buttons.close = this.element.querySelector(`.${CLASSES.CLOSE_BUTTON}`);
   }
 
   get template() {
     return createFilmDetailsTemplate(this.#film, this.#comments);
   }
 
-  removeElement() {
-    this.element.remove();
-    super.removeElement();
+  get buttons() {
+    return this.#buttons;
+  }
+
+  // Назначение внешних обработчиков событий
+  setControlChangeHandler(callback) {
+    this.#callback.controlChange = callback;
+    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
+      this.#buttons[control].addEventListener('click', (evt) => this.#onControlButtonClick(evt, control));
+    });
   }
 
   setCloseButtonClickHandler(callback) {
     this.#callback.closeButtonClick = callback;
-    this.element.querySelector('.film-details__close').addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
+    this.#buttons.close.addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
   }
 
+  // Выполнение сторонних обработчиков событий
   #onCloseButtonClick = (evt) => {
     evt.preventDefault();
     this.#callback.closeButtonClick();
   };
-}
 
-export {FilmDetailsView};
+  #onControlButtonClick = (evt, control) => {
+    evt.preventDefault();
+    this.#callback.controlChange(control);
+  };
+
+  // Методы изменения отображения компонента
+  switchState(element, switchOn) {
+    super.switchState(element, switchOn, CLASSES.STATE.ACTIVE);
+  }
+}
