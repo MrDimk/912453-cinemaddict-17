@@ -30,6 +30,10 @@ export default class FilmPresenter {
     });
   }
 
+  hideCard() {
+    this.#filmCardView.removeFromDOM();
+  }
+
   showDetails(container) {
     if (FilmDetailsView.currentDetailsPopup !== this.#filmDetailsView) {
       if (FilmDetailsView.currentDetailsPopup) {

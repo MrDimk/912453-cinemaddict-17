@@ -4,6 +4,7 @@ import FilmsListView from '../view/films-view/films-list-view';
 import FilmsTitleView from '../view/films-view/films-list-title-view';
 import FilmsListContainerView from '../view/films-view/films-list-container-view';
 import ShowMoreButtonView from '../view/films-view/show-more-button-view';
+import SortPresenter from './sort-presenter';
 
 const EMPTY_LIST_MESSAGES = {
   allMovies: 'There are no movies in our database',
@@ -20,13 +21,15 @@ export default class FilmsListPresenter {
   #titleView;
   #container;
   #filmsListContainerView;
-  #filmsList = [];
+  #filmsPresentersMap;
   #cardsPerPage;
   #cardsOnPageCounter = 0;
   #filmsListView;
   #isHidden;
   #showMoreButton = null;
   #filter = null;
+  #sortPresenter;
+
 
   constructor(data, container, title = '', isHidden = false, cardsPerPage = 5, type = '') {
     this.#filmsData = data.films;
@@ -37,6 +40,7 @@ export default class FilmsListPresenter {
     this.#isHidden = isHidden;
     this.#filmsListView = new FilmsListView(type);
     this.#filmsListContainerView = new FilmsListContainerView();
+    this.#filmsPresentersMap = new Map();
 
     render(this.#filmsListView, this.#container);
     render(this.#filmsListContainerView, this.#filmsListView.element);
@@ -46,19 +50,37 @@ export default class FilmsListPresenter {
     this.renderFilmsCards();
   }
 
+  initSort(container) {
+    this.#sortPresenter = new SortPresenter(this.#filmsData);
+    this.#filmsData = this.#sortPresenter.sortBy('default');
+    this.#sortPresenter.addSortUpdateListener(this.updateFilmsList);
+    this.#sortPresenter.init(container);
+  }
+
+  updateFilmsList = (updatedList) => {
+    this.#filmsData = updatedList;
+    for (const film of this.#filmsPresentersMap.values()) {
+      film.hideCard();
+    }
+    const rerenderCardsCount = this.#cardsOnPageCounter;
+    this.#cardsOnPageCounter = 0;
+    this.renderFilmsCards(rerenderCardsCount);
+  };
+
   createFilmsList(filmsData, comments) {
     for (let i = 0; i < this.#filmsData.length; i++) {
       const filmComments = comments.filter((comment) => this.#filmsData[i].comments.some((id) => comment.id === id));
-      this.#filmsList.push(new FilmPresenter(filmsData[i], filmComments, this.#filmsListContainerView.element));
+      const newFilm = new FilmPresenter(filmsData[i], filmComments, this.#filmsListContainerView.element);
+      this.#filmsPresentersMap.set(filmsData[i].id, newFilm);
     }
   }
 
   renderFilmsCards = (countMore = this.#cardsPerPage) => {
     let count = this.#cardsOnPageCounter;
-    for (count; (count < this.#cardsOnPageCounter + countMore) && (count < this.#filmsList.length); count++) {
-      this.#filmsList[count].showCard();
+    for (count; (count < this.#cardsOnPageCounter + countMore) && (count < this.#filmsPresentersMap.size); count++) {
+      this.#filmsPresentersMap.get(this.#filmsData[count].id).showCard();
     }
-    if (count < this.#filmsList.length) {
+    if (count < this.#filmsPresentersMap.size) {
       this.#renderShowMoreButton();
     } else {
       this.#removeShowMoreButton();
@@ -86,7 +108,7 @@ export default class FilmsListPresenter {
     // поэтому проверку на пустой список лучше прямо тут реализовать
     // пока предусматриваем только один "case", а проверку только на пустой #filmsList,
     // при реализации фильтров будем дополнять логику
-    if (this.#filmsList.length === 0) {
+    if (this.#filmsPresentersMap.length === 0) {
       isHidden = false;
       switch (this.#filter) {
         case null:

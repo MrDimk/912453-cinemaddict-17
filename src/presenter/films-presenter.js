@@ -23,12 +23,14 @@ const filmsListTypes = {
 export default class FilmsPresenter {
   #filmsContent;
   #data;
+  #container;
 
-  constructor() {
+  constructor(container) {
     this.#filmsContent = new FilmsView();
+    this.#container = container;
   }
 
-  init(container, data) {
+  init(data) {
     this.#data = data;
     this.topRatedData = {
       films: data.films.slice(0, 2),
@@ -39,7 +41,7 @@ export default class FilmsPresenter {
       comments: data.comments.slice()
     };
 
-    render(this.#filmsContent, container);
+    render(this.#filmsContent, this.#container);
 
     // Создаем три списка фильмов, пока для каждого списка при создании отличаются входные данные,
     // далее после реализации фильтра и сортировки, исходные данные скорее всего будут преобразовываться внутри каждого списка
@@ -49,6 +51,8 @@ export default class FilmsPresenter {
       this.#filmsContent.element,
       filmsListTypes.main.title,
       filmsListTypes.main.isHidden);
+
+    this.allFilmsList.initSort(this.#container);
 
     this.filmsTopRatedList = new FilmsListPresenter(
       this.topRatedData,
