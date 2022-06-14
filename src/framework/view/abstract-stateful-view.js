@@ -37,6 +37,11 @@ export default class AbstractStatefulView extends AbstractView {
     this._state = {...this._state, ...update};
   };
 
+  //** Метод для восстановления прокрутки элемента из состояния */
+  #restoreScroll() {
+    this.element.scrollTop = this._state.scrollTop;
+  }
+
   /** Метод для перерисовки элемента */
   #rerenderElement = () => {
     const prevElement = this.element;
@@ -46,7 +51,7 @@ export default class AbstractStatefulView extends AbstractView {
     const newElement = this.element;
 
     parent.replaceChild(newElement, prevElement);
-
+    this.#restoreScroll();
     this._restoreHandlers();
   };
 }

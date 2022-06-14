@@ -3,148 +3,148 @@ import dayjs from 'dayjs';
 const DESCRIPTION_MAX_LENGTH = 140;
 
 export default class FilmDataAdapter {
-  #title;
-  #rating;
-  #releaseYear;
-  #duration;
-  #genre;
-  #poster;
-  #shortDescription;
-  #comments;
-  #watchlist;
-  #watched;
-  #favorite;
-  #director;
-  #writers;
-  #actors;
-  #releaseDate;
-  #country;
-  #genres;
-  #description;
-  #age;
+  // #title;
+  // #rating;
+  // #releaseYear;
+  // #duration;
+  // #genre;
+  // #poster;
+  // #shortDescription;
+  // #comments;
+  // #watchlist;
+  // #watched;
+  // #favorite;
+  // #director;
+  // #writers;
+  // #actors;
+  // #releaseDate;
+  // #country;
+  // #genres;
+  // #description;
+  // #age;
 
   constructor(filmData) {
     const info = filmData['film_info'];
     const details = filmData['user_details'];
 
-    this.#title = info.title;
-    this.#rating = info['total_rating'];
-    this.#releaseYear = dayjs(info.release.date).format('YYYY');
-    this.#duration = this.formatDuration(info.runtime);
-    this.#genre = info.genre[0];
-    this.#poster = info.poster;
-    this.#shortDescription = `${info.description.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`;
-    this.#comments = this.formatCommentsCount(filmData.comments.length);
+    this.title = info.title;
+    this.rating = info['total_rating'];
+    this.releaseYear = dayjs(info.release.date).format('YYYY');
+    this.duration = this.#formatDuration(info.runtime);
+    this.genre = info.genre[0];
+    this.poster = info.poster;
+    this.shortDescription = `${info.description.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`;
+    this.comments = this.#formatCommentsCount(filmData.comments.length);
 
-    this.#watchlist = details.watchlist;
-    this.#watched = details['already_watched'];
-    this.#favorite = details.favorite;
+    this.watchlist = details.watchlist;
+    this.watched = details['already_watched'];
+    this.favorite = details.favorite;
 
-    this.#director = info.director;
-    this.#writers = info.writers.join(', ');
-    this.#actors = info.actors.join(', ');
-    this.#releaseDate = dayjs(info.release.date).format('D MMMM YYYY');
-    this.#country = info.release['release_country'];
-    this.#genres = info.genre;
-    this.#description = info.description;
-    this.#age = info['age_rating'];
+    this.director = info.director;
+    this.writers = info.writers.join(', ');
+    this.actors = info.actors.join(', ');
+    this.releaseDate = dayjs(info.release.date).format('D MMMM YYYY');
+    this.country = info.release['release_country'];
+    this.genres = info.genre;
+    this.description = info.description;
+    this.age = info['age_rating'];
   }
 
-  get title() {
-    return this.#title;
-  }
+  // get title() {
+  //   return this.#title;
+  // }
 
-  get rating() {
-    return this.#rating;
-  }
+  // get rating() {
+  //   return this.#rating;
+  // }
 
-  get releaseYear() {
-    return this.#releaseYear;
-  }
+  // get releaseYear() {
+  //   return this.#releaseYear;
+  // }
 
-  get duration() {
-    return this.#duration;
-  }
+  // get duration() {
+  //   return this.#duration;
+  // }
 
-  get genre() {
-    return this.#genre;
-  }
+  // get genre() {
+  //   return this.#genre;
+  // }
 
-  get poster() {
-    return this.#poster;
-  }
+  // get poster() {
+  //   return this.#poster;
+  // }
 
-  get shortDescription() {
-    return this.#shortDescription;
-  }
+  // get shortDescription() {
+  //   return this.#shortDescription;
+  // }
 
-  get comments() {
-    return this.#comments;
-  }
+  // get comments() {
+  //   return this.#comments;
+  // }
 
-  get watchlist() {
-    return this.#watchlist;
-  }
+  // get watchlist() {
+  //   return this.#watchlist;
+  // }
 
-  get watched() {
-    return this.#watched;
-  }
+  // get watched() {
+  //   return this.#watched;
+  // }
 
-  get favorite() {
-    return this.#favorite;
-  }
+  // get favorite() {
+  //   return this.#favorite;
+  // }
 
-  get director() {
-    return this.#director;
-  }
+  // get director() {
+  //   return this.#director;
+  // }
 
-  get writers() {
-    return this.#writers;
-  }
+  // get writers() {
+  //   return this.#writers;
+  // }
 
-  get actors() {
-    return this.#actors;
-  }
+  // get actors() {
+  //   return this.#actors;
+  // }
 
-  get releaseDate() {
-    return this.#releaseDate;
-  }
+  // get releaseDate() {
+  //   return this.#releaseDate;
+  // }
 
-  get country() {
-    return this.#country;
-  }
+  // get country() {
+  //   return this.#country;
+  // }
 
-  get genres() {
-    return this.#genres;
-  }
+  // get genres() {
+  //   return this.#genres;
+  // }
 
-  get description() {
-    return this.#description;
-  }
+  // get description() {
+  //   return this.#description;
+  // }
 
-  get age() {
-    return this.#age;
-  }
+  // get age() {
+  //   return this.#age;
+  // }
 
-  set watchlist(newState) {
-    this.#watchlist = newState;
-  }
+  // set watchlist(newState) {
+  //   this.#watchlist = newState;
+  // }
 
-  set watched(newState) {
-    this.#watched = newState;
-  }
+  // set watched(newState) {
+  //   this.#watched = newState;
+  // }
 
-  set favorite(newState) {
-    this.#favorite = newState;
-  }
+  // set favorite(newState) {
+  //   this.#favorite = newState;
+  // }
 
-  formatDuration(minutes) {
+  #formatDuration(minutes) {
     const h = (minutes / 60).toFixed(0);
     const m = (minutes % 60);
     return `${h}h ${m}m`;
   }
 
-  formatCommentsCount(commentsCount) {
+  #formatCommentsCount(commentsCount) {
     return commentsCount === 1 ? `${commentsCount} comment` : `${commentsCount} comments`;
   }
 }
