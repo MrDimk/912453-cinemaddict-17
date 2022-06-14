@@ -2,7 +2,7 @@ import {render} from '../framework/render';
 import FilmCardView from '../view/films-view/film-card-view';
 import FilmDataAdapter from './film-data-adapter';
 import FilmDetailsView from '../view/films-view/film-details-view';
-import EscKeyHandler from '../util';
+import KeyHandler from '../util';
 
 // Управляет логикой одного фильма: паказ карточки и деталей, обработчики событий
 export default class FilmPresenter {
@@ -17,7 +17,7 @@ export default class FilmPresenter {
     this.#comments = comments;
     this.#container = container;
     this.#filmCardView = new FilmCardView(this.#filmData);
-    this.#filmDetailsView = new FilmDetailsView(this.#filmData, this.#comments);
+    this.#filmDetailsView = new FilmDetailsView(this.#filmData, this.#comments, document.body);
 
     this.#filmCardView.setControlChangeHandler(this.#onControlChange);
     this.#filmDetailsView.setControlChangeHandler(this.#onControlChange);
@@ -34,15 +34,15 @@ export default class FilmPresenter {
     this.#filmCardView.removeFromDOM();
   }
 
-  showDetails(container) {
+  showDetails() {
     if (FilmDetailsView.currentDetailsPopup !== this.#filmDetailsView) {
       if (FilmDetailsView.currentDetailsPopup) {
         FilmDetailsView.currentDetailsPopup.removeFromDOM();
       }
-      render(this.#filmDetailsView, container);
+      this.#filmDetailsView.render();
       document.body.classList.add('hide-overflow');
       this.#filmDetailsView.setCloseButtonClickHandler(this.#onCloseDetails);
-      EscKeyHandler.add(this.#onCloseDetails);
+      KeyHandler.add('esc', this.#onCloseDetails);
       FilmDetailsView.currentDetailsPopup = this.#filmDetailsView;
     }
   }
@@ -51,7 +51,7 @@ export default class FilmPresenter {
     document.body.classList.remove('hide-overflow');
     this.#filmDetailsView.removeFromDOM();
     FilmDetailsView.clearCurrentDetailsPopup();
-    EscKeyHandler.remove(this.#onCloseDetails);
+    KeyHandler.remove(this.#onCloseDetails);
   };
 
   #onControlChange = (controlType) => {

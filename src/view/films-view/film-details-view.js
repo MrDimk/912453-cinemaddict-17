@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import AbstractView from '../../framework/view/abstract-view';
+import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
+import {render} from '../../framework/render';
 
 const CLASSES = {
   STATE: {
@@ -13,16 +14,23 @@ const CLASSES = {
   CLOSE_BUTTON: 'film-details__close'
 };
 
-const createFilmDetailsTemplate = (film, comments) => {
-  const watchlist = film.watchlist ? CLASSES.STATE.ACTIVE : '';
-  const watched = film.watched ? CLASSES.STATE.ACTIVE : '';
-  const favorite = film.favorite ? CLASSES.STATE.ACTIVE : '';
+const EMOJIES = {
+  smile: './images/emoji/smile.png',
+  sleeping: './images/emoji/sleeping.png',
+  puke: './images/emoji/puke.png',
+  angry: './images/emoji/angry.png'
+};
+
+const createFilmDetailsTemplate = (state) => {
+  const watchlist = state.watchlist ? CLASSES.STATE.ACTIVE : '';
+  const watched = state.watched ? CLASSES.STATE.ACTIVE : '';
+  const favorite = state.favorite ? CLASSES.STATE.ACTIVE : '';
 
   const genres = [];
-  film.genres.forEach((genre) => genres.push(`<span class="film-details__genre">${genre}</span>`));
+  state.genres.forEach((genre) => genres.push(`<span class="film-details__genre">${genre}</span>`));
 
   const commentsLayoutArray = [];
-  comments.forEach((comment) => {
+  state.comments.forEach((comment) => {
     const commentDay = dayjs(comment.date).format('YYYY/MM/DD HH:MM');
     commentsLayoutArray.push(`
     <li class="film-details__comment">
@@ -41,6 +49,19 @@ const createFilmDetailsTemplate = (film, comments) => {
     `);
   });
 
+  const emojiesLayoutArray = [];
+  Object.keys(EMOJIES).forEach((key) => emojiesLayoutArray.push(`
+    <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${key}" value="${key}" ${state.newComment.emoji === key ? 'checked' : ''}>
+    <label class="film-details__emoji-label" for="emoji-${key}">
+      <img src="${EMOJIES[key]}" width="30" height="30" alt="emoji">
+    </label>
+  `));
+
+  const newComment = {
+    img: state.newComment.emoji ? `<img src="${EMOJIES[state.newComment.emoji]}" width="55" height="55" alt="emoji-${state.newComment.emoji}">` : '',
+    text: state.newComment.text
+  };
+
   return (
     `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -50,47 +71,47 @@ const createFilmDetailsTemplate = (film, comments) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="${film.poster}" alt="">
+              <img class="film-details__poster-img" src="${state.poster}" alt="">
 
-              <p class="film-details__age">${film.age}+</p>
+              <p class="film-details__age">${state.age}+</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
-                  <h3 class="film-details__title">${film.title}</h3>
-                  <p class="film-details__title-original">Original: ${film.title}</p>
+                  <h3 class="film-details__title">${state.title}</h3>
+                  <p class="film-details__title-original">Original: ${state.title}</p>
                 </div>
 
                 <div class="film-details__rating">
-                  <p class="film-details__total-rating">${film.rating}</p>
+                  <p class="film-details__total-rating">${state.rating}</p>
                 </div>
               </div>
 
               <table class="film-details__table">
                 <tr class="film-details__row">
                   <td class="film-details__term">Director</td>
-                  <td class="film-details__cell">${film.director}</td>
+                  <td class="film-details__cell">${state.director}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${film.writers}</td>
+                  <td class="film-details__cell">${state.writers}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${film.actors}</td>
+                  <td class="film-details__cell">${state.actors}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${film.releaseDate}</td>
+                  <td class="film-details__cell">${state.releaseDate}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${film.duration}</td>
+                  <td class="film-details__cell">${state.duration}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
-                  <td class="film-details__cell">${film.country}</td>
+                  <td class="film-details__cell">${state.country}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
@@ -101,7 +122,7 @@ const createFilmDetailsTemplate = (film, comments) => {
               </table>
 
               <p class="film-details__film-description">
-                ${film.description}
+                ${state.description}
               </p>
             </div>
           </div>
@@ -115,39 +136,20 @@ const createFilmDetailsTemplate = (film, comments) => {
 
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${state.comments.length}</span></h3>
 
             <ul class="film-details__comments-list">
               ${commentsLayoutArray.join('')}
             </ul>
 
             <div class="film-details__new-comment">
-              <div class="film-details__add-emoji-label"></div>
-
+              <div class="film-details__add-emoji-label">${newComment.img}</div>
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newComment.text}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-                <label class="film-details__emoji-label" for="emoji-smile">
-                  <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                <label class="film-details__emoji-label" for="emoji-sleeping">
-                  <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-                <label class="film-details__emoji-label" for="emoji-puke">
-                  <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-                <label class="film-details__emoji-label" for="emoji-angry">
-                  <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-                </label>
+              ${emojiesLayoutArray.join('')}
               </div>
             </div>
           </section>
@@ -157,13 +159,17 @@ const createFilmDetailsTemplate = (film, comments) => {
   `);
 };
 
-export default class FilmDetailsView extends AbstractView {
+export default class FilmDetailsView extends AbstractStatefulView {
   static #currentDetailsPopup = null;
 
   #film;
   #comments;
   #callback = {};
   #buttons = {};
+  #form;
+  #container;
+  #newCommentText = '';
+  #currentScrollTop = 0;
 
   static set currentDetailsPopup(instanse) {
     this.#currentDetailsPopup = instanse;
@@ -177,35 +183,63 @@ export default class FilmDetailsView extends AbstractView {
     this.#currentDetailsPopup = null;
   }
 
-  constructor(film, comments) {
+  static dataToState = (film, comments) => ({
+    ...film,
+    comments: comments,
+    newComment: {
+      emoji: null,
+      text: ''
+    }
+  });
+
+  constructor(film, comments, container) {
     super();
     this.#film = film;
     this.#comments = comments;
-    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
-      this.#buttons[control] = this.element.querySelector(`.${CLASSES.FILM_CONTROLS[control]}`);
-    });
-    this.#buttons.close = this.element.querySelector(`.${CLASSES.CLOSE_BUTTON}`);
+    this.#container = container;
+    this._state = FilmDetailsView.dataToState(this.#film, this.#comments);
   }
 
   get template() {
-    return createFilmDetailsTemplate(this.#film, this.#comments);
+    return createFilmDetailsTemplate(this._state);
   }
 
   get buttons() {
     return this.#buttons;
   }
 
+  _restoreHandlers = () => {
+    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
+      this.#buttons[control] = this.element.querySelector(`.${CLASSES.FILM_CONTROLS[control]}`);
+      this.#buttons[control].addEventListener('click', (evt) => this.#onControlButtonClick(evt, control));
+    });
+
+    this.#buttons.close = this.element.querySelector(`.${CLASSES.CLOSE_BUTTON}`);
+    this.#buttons.close.addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
+
+    this.#form = this.element.querySelector('.film-details__inner');
+    this.#form.addEventListener('change', (evt) => this.#onCommentEmojiChange(evt));
+    this.#form.addEventListener('input', (evt) => this.#onNewCommentInput(evt));
+
+    this.element.addEventListener('scroll', (evt) => this.#onDetailsScroll(evt));
+  };
+
+  render() {
+    render(this, this.#container);
+    this._restoreHandlers();
+  }
+
   // Назначение внешних обработчиков событий
   setControlChangeHandler(callback) {
     this.#callback.controlChange = callback;
-    Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
-      this.#buttons[control].addEventListener('click', (evt) => this.#onControlButtonClick(evt, control));
-    });
   }
 
   setCloseButtonClickHandler(callback) {
     this.#callback.closeButtonClick = callback;
-    this.#buttons.close.addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
+  }
+
+  setFormSubmitHandler(callback) {  //////////////////////// todo
+    this.#callback.formSubmit = callback;
   }
 
   // Выполнение сторонних обработчиков событий
@@ -217,6 +251,35 @@ export default class FilmDetailsView extends AbstractView {
   #onControlButtonClick = (evt, control) => {
     evt.preventDefault();
     this.#callback.controlChange(control);
+  };
+
+  // Выполнение внутренних обработчиков
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#callback.formSubmit(this._state);
+  };
+
+  #onCommentEmojiChange = (evt) => {
+    evt.preventDefault();
+    if (evt.target.name === 'comment-emoji') {
+      this.updateElement({
+        newComment: {
+          emoji: evt.target.value,
+          text: this.#newCommentText
+        },
+        scrollTop: this.#currentScrollTop
+      });
+    }
+  };
+
+  #onNewCommentInput = (evt) => {
+    if (evt.target.name === 'comment') {
+      this.#newCommentText = evt.target.value;
+    }
+  };
+
+  #onDetailsScroll = (evt) => {
+    this.#currentScrollTop = evt.target.scrollTop;
   };
 
   // Методы изменения отображения компонента
