@@ -3,26 +3,6 @@ import dayjs from 'dayjs';
 const DESCRIPTION_MAX_LENGTH = 140;
 
 export default class FilmDataAdapter {
-  // #title;
-  // #rating;
-  // #releaseYear;
-  // #duration;
-  // #genre;
-  // #poster;
-  // #shortDescription;
-  // #comments;
-  // #watchlist;
-  // #watched;
-  // #favorite;
-  // #director;
-  // #writers;
-  // #actors;
-  // #releaseDate;
-  // #country;
-  // #genres;
-  // #description;
-  // #age;
-
   constructor(filmData) {
     const info = filmData['film_info'];
     const details = filmData['user_details'];
@@ -49,94 +29,6 @@ export default class FilmDataAdapter {
     this.description = info.description;
     this.age = info['age_rating'];
   }
-
-  // get title() {
-  //   return this.#title;
-  // }
-
-  // get rating() {
-  //   return this.#rating;
-  // }
-
-  // get releaseYear() {
-  //   return this.#releaseYear;
-  // }
-
-  // get duration() {
-  //   return this.#duration;
-  // }
-
-  // get genre() {
-  //   return this.#genre;
-  // }
-
-  // get poster() {
-  //   return this.#poster;
-  // }
-
-  // get shortDescription() {
-  //   return this.#shortDescription;
-  // }
-
-  // get comments() {
-  //   return this.#comments;
-  // }
-
-  // get watchlist() {
-  //   return this.#watchlist;
-  // }
-
-  // get watched() {
-  //   return this.#watched;
-  // }
-
-  // get favorite() {
-  //   return this.#favorite;
-  // }
-
-  // get director() {
-  //   return this.#director;
-  // }
-
-  // get writers() {
-  //   return this.#writers;
-  // }
-
-  // get actors() {
-  //   return this.#actors;
-  // }
-
-  // get releaseDate() {
-  //   return this.#releaseDate;
-  // }
-
-  // get country() {
-  //   return this.#country;
-  // }
-
-  // get genres() {
-  //   return this.#genres;
-  // }
-
-  // get description() {
-  //   return this.#description;
-  // }
-
-  // get age() {
-  //   return this.#age;
-  // }
-
-  // set watchlist(newState) {
-  //   this.#watchlist = newState;
-  // }
-
-  // set watched(newState) {
-  //   this.#watched = newState;
-  // }
-
-  // set favorite(newState) {
-  //   this.#favorite = newState;
-  // }
 
   #formatDuration(minutes) {
     const h = (minutes / 60).toFixed(0);
