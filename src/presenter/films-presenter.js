@@ -21,53 +21,74 @@ const filmsListTypes = {
 };
 
 export default class FilmsPresenter {
-  #filmsContent;
-  #data;
+  #listsContainer;
+  #model;
   #container;
+  #filterModel;
 
-  constructor(container) {
-    this.#filmsContent = new FilmsView();
+  constructor(container, model, filterModel) {
+    this.#listsContainer = new FilmsView();
     this.#container = container;
+    this.#model = model;
+    this.#filterModel = filterModel;
   }
 
-  init(data) {
-    this.#data = data;
-    this.topRatedData = {
-      films: data.films.slice(0, 2),
-      comments: data.comments.slice()
-    };
-    this.mostCommentedData = {
-      films: data.films.slice(0, 2),
-      comments: data.comments.slice()
-    };
+  get model() {
+    return this.#model;
+  }
 
-    render(this.#filmsContent, this.#container);
+  init = () => {
+    render(this.#listsContainer, this.#container);
 
     // Создаем три списка фильмов, пока для каждого списка при создании отличаются входные данные,
     // далее после реализации фильтра и сортировки, исходные данные скорее всего будут преобразовываться внутри каждого списка
     // и уже после отрисовываться в DOM
     this.allFilmsList = new FilmsListPresenter(
-      this.#data,
-      this.#filmsContent.element,
+      this.#model,
+      this.#listsContainer.element,
+      this.#filterModel,
       filmsListTypes.main.title,
       filmsListTypes.main.isHidden);
 
+    this.allFilmsList.setFilter(this.#filterModel);
     this.allFilmsList.initSort(this.#container);
 
-    this.filmsTopRatedList = new FilmsListPresenter(
-      this.topRatedData,
-      this.#filmsContent.element,
-      filmsListTypes.topRated.title,
-      filmsListTypes.topRated.isHidden,
-      filmsListTypes.topRated.length,
-      filmsListTypes.topRated.class);
+    // Готовим данные для списков "tor rates" и "most commented"
+    // this.topRatedData = {
+    //   films: this.model.films.slice(0, 2),
+    //   comments: this.model.comments.slice()
+    // };
+    // Для сортировка самых комментируемых нужен дополнительный компаратор
+    // SortPresenter.addComparator('comments', (a, b) => {
+    //   const commentsA = Number(a.comments.length);
+    //   const commentsB = Number(b.comments.length);
+    //   return commentsA > commentsB ? -1 : 1;
+    // });
+    // this.mostCommentedData = {
+    //   films: this.#model.films.slice(0, 2),
+    //   comments: this.#model.comments.slice()
+    // };
 
-    this.filmsMostCommentedList = new FilmsListPresenter(
-      this.mostCommentedData,
-      this.#filmsContent.element,
-      filmsListTypes.mostCommented.title,
-      filmsListTypes.mostCommented.isHidden,
-      filmsListTypes.mostCommented.length,
-      filmsListTypes.mostCommented.class);
-  }
+    // Создаем списки на основе подготовленных данных
+    // this.filmsTopRatedList = new FilmsListPresenter(
+    //   this.#model,
+    //   this.#listsContainer.element,
+    //   filmsListTypes.topRated.title,
+    //   filmsListTypes.topRated.isHidden,
+    //   filmsListTypes.topRated.length,
+    //   filmsListTypes.topRated.class);
+
+    // this.filmsTopRatedList.init({
+    //   type: 'rating',
+    //   length: 2
+    // });
+
+    // this.filmsMostCommentedList = new FilmsListPresenter(
+    //   this.mostCommentedData,
+    //   this.#listsContainer.element,
+    //   filmsListTypes.mostCommented.title,
+    //   filmsListTypes.mostCommented.isHidden,
+    //   filmsListTypes.mostCommented.length,
+    //   filmsListTypes.mostCommented.class);
+  };
 }

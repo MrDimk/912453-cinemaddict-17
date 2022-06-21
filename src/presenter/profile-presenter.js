@@ -2,11 +2,11 @@ import ProfileView from '../view/profile-view';
 import {render} from '../framework/render';
 
 export default class ProfilePresenter {
-  #profile;
+  #model;
   #profileView;
-  constructor(user) {
-    this.#profile = user;
-    this.#profileView = new ProfileView(this.#profile);
+  constructor(model) {
+    this.#model = model;
+    this.#profileView = new ProfileView(this.#model.user);
   }
 
   init(container) {

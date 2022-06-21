@@ -3,40 +3,48 @@ import dayjs from 'dayjs';
 const DESCRIPTION_MAX_LENGTH = 140;
 
 export default class FilmDataAdapter {
-  constructor(filmData) {
+  static forCard(filmData) {
     const info = filmData['film_info'];
-    const details = filmData['user_details'];
-
-    this.title = info.title;
-    this.rating = info['total_rating'];
-    this.releaseYear = dayjs(info.release.date).format('YYYY');
-    this.duration = this.#formatDuration(info.runtime);
-    this.genre = info.genre[0];
-    this.poster = info.poster;
-    this.shortDescription = `${info.description.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`;
-    this.comments = this.#formatCommentsCount(filmData.comments.length);
-
-    this.watchlist = details.watchlist;
-    this.watched = details['already_watched'];
-    this.favorite = details.favorite;
-
-    this.director = info.director;
-    this.writers = info.writers.join(', ');
-    this.actors = info.actors.join(', ');
-    this.releaseDate = dayjs(info.release.date).format('D MMMM YYYY');
-    this.country = info.release['release_country'];
-    this.genres = info.genre;
-    this.description = info.description;
-    this.age = info['age_rating'];
+    return {
+      'user_details': filmData['user_details'],
+      title: info.title,
+      poster: info.poster,
+      rating: info['total_rating'],
+      releaseYear: dayjs(info.release.date).format('YYYY'),
+      duration: this.#formatDuration(info.runtime),
+      genre: info.genre[0],
+      shortDescription: `${info.description.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`,
+      comments: this.#formatCommentsCount(filmData.comments.length)
+    };
   }
 
-  #formatDuration(minutes) {
+  static forDetails(filmData) {
+    const info = filmData['film_info'];
+    return {
+      'user_details': filmData['user_details'],
+      title: info.title,
+      rating: info['total_rating'],
+      duration: this.#formatDuration(info.runtime),
+      genres: info.genre,
+      poster: info.poster,
+      age: info['age_rating'],
+      director: info.director,
+      writers: info.writers.join(', '),
+      actors: info.actors.join(', '),
+      releaseDate: dayjs(info.release.date).format('D MMMM YYYY'),
+      country: info.release['release_country'],
+      description: info.description,
+      comments: filmData.comments
+    };
+  }
+
+  static #formatDuration(minutes) {
     const h = (minutes / 60).toFixed(0);
     const m = (minutes % 60);
     return `${h}h ${m}m`;
   }
 
-  #formatCommentsCount(commentsCount) {
+  static #formatCommentsCount(commentsCount) {
     return commentsCount === 1 ? `${commentsCount} comment` : `${commentsCount} comments`;
   }
 }

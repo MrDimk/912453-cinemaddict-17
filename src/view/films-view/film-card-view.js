@@ -1,4 +1,5 @@
 import AbstractView from '../../framework/view/abstract-view';
+import FilmDataAdapter from '../../presenter/film-data-adapter';
 
 const CLASSES = {
   STATE: {
@@ -6,15 +7,16 @@ const CLASSES = {
   },
   FILM_CONTROLS: {
     watchlist: 'film-card__controls-item--add-to-watchlist',
-    watched: 'film-card__controls-item--mark-as-watched',
+    'already_watched': 'film-card__controls-item--mark-as-watched',
     favorite: 'film-card__controls-item--favorite'
   }
 };
 
-const createFilmCardTemplate = (film) => {
-  const watchlist = film.watchlist ? CLASSES.STATE.ACTIVE : '';
-  const watched = film.watched ? CLASSES.STATE.ACTIVE : '';
-  const favorite = film.favorite ? CLASSES.STATE.ACTIVE : '';
+const createFilmCardTemplate = (filmData) => {
+  const film = FilmDataAdapter.forCard(filmData);
+  const watchlist = film['user_details'].watchlist ? CLASSES.STATE.ACTIVE : '';
+  const watched = film['user_details']['already_watched'] ? CLASSES.STATE.ACTIVE : '';
+  const favorite = film['user_details'].favorite ? CLASSES.STATE.ACTIVE : '';
 
   return (`
    <article class="film-card">
@@ -40,20 +42,20 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class FilmCardView extends AbstractView {
-  #data;
+  #film;
   #callback = {};
   #buttons = {};
 
   constructor(filmData) {
     super();
-    this.#data = filmData;
+    this.#film = filmData;
     Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
       this.#buttons[control] = this.element.querySelector(`.${CLASSES.FILM_CONTROLS[control]}`);
     });
   }
 
   get template() {
-    return createFilmCardTemplate(this.#data);
+    return createFilmCardTemplate(this.#film);
   }
 
   get buttons() {

@@ -37,6 +37,16 @@ export default class SortView extends AbstractView {
     return createSortTemplate(this.#sortTypes, this.#sortTypes[this.#activeTypeIndex]);
   }
 
+  setSort = (type, runAnyway = false) => {
+    const sortTypeIndex = this.#sortTypes.indexOf(type);
+    if (this.#activeTypeIndex !== sortTypeIndex || runAnyway) {
+      this.switchState(this.#buttons[this.#activeTypeIndex], false);
+      this.#activeTypeIndex = sortTypeIndex;
+      this.switchState(this.#buttons[this.#activeTypeIndex], true);
+      this.#sortingChangeHandler(type);
+    }
+  };
+
   setSortingChangeHandler(callback) {
     this.#sortingChangeHandler = callback;
     this.#buttons.forEach((button, index) => button
@@ -45,12 +55,7 @@ export default class SortView extends AbstractView {
 
   #onSortButtonClick = (evt, sortTypeIndex) => {
     evt.preventDefault();
-    if (this.#activeTypeIndex !== sortTypeIndex) {
-      this.switchState(this.#buttons[this.#activeTypeIndex], false);
-      this.#activeTypeIndex = sortTypeIndex;
-      this.switchState(this.#buttons[this.#activeTypeIndex], true);
-      this.#sortingChangeHandler(this.#sortTypes[this.#activeTypeIndex]);
-    }
+    this.setSort(this.#sortTypes[sortTypeIndex]);
   };
 
   switchState(element, switchOn) {

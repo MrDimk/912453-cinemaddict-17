@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import {render} from '../../framework/render';
+import FilmDataAdapter from '../../presenter/film-data-adapter';
+import KeyHandler from '../../util';
+import he from 'he';
 
 const CLASSES = {
   STATE: {
@@ -8,7 +11,7 @@ const CLASSES = {
   },
   FILM_CONTROLS: {
     watchlist: 'film-details__control-button--watchlist',
-    watched: 'film-details__control-button--watched',
+    'already_watched': 'film-details__control-button--watched',
     favorite: 'film-details__control-button--favorite'
   },
   CLOSE_BUTTON: 'film-details__close'
@@ -22,9 +25,9 @@ const EMOJIES = {
 };
 
 const createFilmDetailsTemplate = (state) => {
-  const watchlist = state.watchlist ? CLASSES.STATE.ACTIVE : '';
-  const watched = state.watched ? CLASSES.STATE.ACTIVE : '';
-  const favorite = state.favorite ? CLASSES.STATE.ACTIVE : '';
+  const watchlist = state['user_details'].watchlist ? CLASSES.STATE.ACTIVE : '';
+  const watched = state['user_details']['already_watched'] ? CLASSES.STATE.ACTIVE : '';
+  const favorite = state['user_details'].favorite ? CLASSES.STATE.ACTIVE : '';
 
   const genres = [];
   state.genres.forEach((genre) => genres.push(`<span class="film-details__genre">${genre}</span>`));
@@ -38,11 +41,11 @@ const createFilmDetailsTemplate = (state) => {
       <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
     </span>
     <div>
-      <p class="film-details__comment-text">${comment.comment}</p>
+      <p class="film-details__comment-text">${he.encode(comment.comment)}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
         <span class="film-details__comment-day">${commentDay}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
       </p>
     </div>
   </li>
@@ -163,7 +166,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
   static #currentDetailsPopup = null;
 
   #film;
-  #comments;
   #callback = {};
   #buttons = {};
   #form;
@@ -184,7 +186,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
   }
 
   static dataToState = (film, comments) => ({
-    ...film,
+    ...FilmDataAdapter.forDetails(film),
     comments: comments,
     newComment: {
       emoji: null,
@@ -192,12 +194,21 @@ export default class FilmDetailsView extends AbstractStatefulView {
     }
   });
 
-  constructor(film, comments, container) {
+  constructor(film, loadComments, container) {
     super();
     this.#film = film;
-    this.#comments = comments;
+    this.loadComments = loadComments;
     this.#container = container;
-    this._state = FilmDetailsView.dataToState(this.#film, this.#comments);
+  }
+
+  init(film) {
+    this._state = FilmDetailsView.dataToState(film, this.filmComments);
+    this.render();
+  }
+
+  get filmComments() {
+    const filmComments = this.loadComments().filter((comment) => this.#film.comments.some((id) => comment.id === id));
+    return filmComments;
   }
 
   get template() {
@@ -208,6 +219,8 @@ export default class FilmDetailsView extends AbstractStatefulView {
     return this.#buttons;
   }
 
+  getCurrentScroll = () => this.#currentScrollTop;
+
   _restoreHandlers = () => {
     Object.keys(CLASSES.FILM_CONTROLS).forEach((control) => {
       this.#buttons[control] = this.element.querySelector(`.${CLASSES.FILM_CONTROLS[control]}`);
@@ -217,16 +230,26 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.#buttons.close = this.element.querySelector(`.${CLASSES.CLOSE_BUTTON}`);
     this.#buttons.close.addEventListener('click', (evt) => this.#onCloseButtonClick(evt));
 
+    this.#buttons.commentDelete = this.element.querySelectorAll('.film-details__comment-delete');
+
     this.#form = this.element.querySelector('.film-details__inner');
     this.#form.addEventListener('change', (evt) => this.#onCommentEmojiChange(evt));
     this.#form.addEventListener('input', (evt) => this.#onNewCommentInput(evt));
+    KeyHandler.add('cmd+Enter', this.#onFormSubmit);
 
     this.element.addEventListener('scroll', (evt) => this.#onDetailsScroll(evt));
+
+    this.#form.querySelector('.film-details__comments-list').addEventListener('click', (evt) => this.#onCommentDelete(evt));
   };
 
   render() {
     render(this, this.#container);
     this._restoreHandlers();
+  }
+
+  close() {
+    this.#newCommentText = '';
+    this.removeFromDOM();
   }
 
   // Назначение внешних обработчиков событий
@@ -238,8 +261,12 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.#callback.closeButtonClick = callback;
   }
 
-  setFormSubmitHandler(callback) {  //////////////////////// todo
+  setFormSubmitHandler(callback) {
     this.#callback.formSubmit = callback;
+  }
+
+  setCommentDeleteHandler(callback) {
+    this.#callback.commentDelete = callback;
   }
 
   // Выполнение сторонних обработчиков событий
@@ -254,9 +281,15 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   // Выполнение внутренних обработчиков
-  #onFormSubmit = (evt) => {
-    evt.preventDefault();
-    this.#callback.formSubmit(this._state);
+  #onFormSubmit = () => {
+    if (this._state.newComment.emoji && this.#newCommentText) {
+      this.#callback.formSubmit({
+        comment: this.#newCommentText,
+        emotion: this._state.newComment.emoji,
+        filmId: this.#film.id
+      });
+    }
+    KeyHandler.remove('cmd+Enter', this.#onFormSubmit);
   };
 
   #onCommentEmojiChange = (evt) => {
@@ -282,8 +315,13 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.#currentScrollTop = evt.target.scrollTop;
   };
 
-  // Методы изменения отображения компонента
-  switchState(element, switchOn) {
-    super.switchState(element, switchOn, CLASSES.STATE.ACTIVE);
-  }
+  #onCommentDelete = (evt) => {
+    evt.preventDefault();
+    this.#callback.commentDelete(
+      {
+        filmId: this.#film.id,
+        commentId: evt.target.dataset.id
+      }
+    );
+  };
 }

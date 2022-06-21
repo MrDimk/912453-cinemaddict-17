@@ -3,7 +3,7 @@ import {render, RenderPosition} from '../framework/render';
 import dayjs from 'dayjs';
 
 const SORT = {
-  TYPES: ['dafault', 'date', 'rating'],
+  TYPES: ['default', 'date', 'rating'], // Только эти типы используются в генерации элементов интерфейса сортировки
   COMPARATORS: new Map(Object.entries({
     'date': (a, b) => {
       const dateA = dayjs(a.film_info.release.date);
@@ -15,41 +15,51 @@ const SORT = {
       const ratingB = Number(b.film_info.total_rating);
       return ratingA > ratingB ? -1 : 1;
     },
+    'comments': (a, b) => {
+      const commentsA = Number(a.comments.length);
+      const commentsB = Number(b.comments.length);
+      return commentsA > commentsB ? -1 : 1;
+    }
   }))
 };
 
 export default class SortPresenter {
   #sortView;
-  #originList;
   #sortedList;
-  #comparators;
   #listeners;
 
-  constructor(filmsList) {
-    this.#originList = filmsList;
-    this.#comparators = SORT.COMPARATORS;
+  static #comparators = SORT.COMPARATORS;
+
+  constructor(getFilms) {
+    this.getFilms = getFilms;
     this.#listeners = new Set();
     this.#sortView = new SortView(SORT.TYPES);
-    this.#sortView.setSortingChangeHandler(this.sortBy);
+    this.#sortView.setSortingChangeHandler(this.sortFilms);
   }
 
-  // Пока данный метод не используется, компараторы присваиваются сразу в конструкторе
-  addComparator(name, compareFunction) {
-    this.#comparators.set(name, compareFunction);
+  // Используем для создания дополнительных предсортированных списков
+  static addComparator(typeName, compareFunction) {
+    SortPresenter.#comparators.set(typeName, compareFunction);
   }
 
   addSortUpdateListener(callback) {
     this.#listeners.add(callback);
   }
 
-  sortBy = (type) => {
-    if (type === 'default' || !this.#comparators.has(type)) {
-      this.#sortedList = this.#originList;
-    } else {
-      this.#sortedList = this.#originList.slice().sort(this.#comparators.get(type));
-    }
+  sortFilms = (type) => {
+    this.#sortedList = SortPresenter.sortBy(this.getFilms(), type);
     this.#listeners.forEach((listener) => listener(this.#sortedList));
-    return this.#sortedList;
+  };
+
+  setSort = (type, runAnyway = false) => this.#sortView.setSort(type, runAnyway);
+
+  // Для подготовки данных в предсортированных списках выносим метод за рамки экземпляров
+  static sortBy = (films, type) => {
+    if (type === 'default' || !SortPresenter.#comparators.has(type)) {
+      return films;
+    } else {
+      return films.slice().sort(SortPresenter.#comparators.get(type));
+    }
   };
 
   init(container) {

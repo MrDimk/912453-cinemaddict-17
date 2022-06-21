@@ -66,6 +66,10 @@ export default class MockService {
     Array.from({length: filmsCount}).forEach(() => this.#films.push(this.generateFilmData()));
   }
 
+  get newId() {
+    return MockService.#counterID++;
+  }
+
   get userData() {
     return this.#userData;
   }
@@ -74,13 +78,21 @@ export default class MockService {
     return this.#comments;
   }
 
+  set comments(update) {
+    this.#comments = update;
+  }
+
   get films() {
     return this.#films;
   }
 
+  set films(update) {
+    this.#films = update;
+  }
+
   generateComment() {
     return {
-      id: MockService.#counterID++,
+      id: this.newId,
       author: getMockFromArray(NAMES),
       comment: getMockFromArray(LOREM),
       date: getDateInPast(),
@@ -99,7 +111,7 @@ export default class MockService {
     const isWatched = Boolean(Math.round(Math.random()));
 
     return {
-      id: MockService.#counterID++,
+      id: this.newId,
       comments: this.comments.filter(() => Math.round(Math.random())).map((comment) => comment.id),
       'film_info': {
         title: getMockFromArray(TITLES),
