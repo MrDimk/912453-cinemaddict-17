@@ -50,8 +50,4 @@ export default class FilterPresenter {
   };
 
   #onFilterModelEvent = () => this.init();
-
-  #onDataModelEvent() {
-
-  }
 }

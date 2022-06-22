@@ -37,11 +37,6 @@ export default class SortPresenter {
     this.#sortView.setSortingChangeHandler(this.sortFilms);
   }
 
-  // Используем для создания дополнительных предсортированных списков
-  static addComparator(typeName, compareFunction) {
-    SortPresenter.#comparators.set(typeName, compareFunction);
-  }
-
   addSortUpdateListener(callback) {
     this.#listeners.add(callback);
   }
@@ -53,7 +48,15 @@ export default class SortPresenter {
 
   setSort = (type, runAnyway = false) => this.#sortView.setSort(type, runAnyway);
 
-  // Для подготовки данных в предсортированных списках выносим метод за рамки экземпляров
+  init(container) {
+    render(this.#sortView, container, RenderPosition.AFTERBEGIN);
+  }
+
+  // Используем для создания дополнительных предсортированных списков
+  static addComparator(typeName, compareFunction) {
+    SortPresenter.#comparators.set(typeName, compareFunction);
+  }
+
   static sortBy = (films, type) => {
     if (type === 'default' || !SortPresenter.#comparators.has(type)) {
       return films;
@@ -61,9 +64,4 @@ export default class SortPresenter {
       return films.slice().sort(SortPresenter.#comparators.get(type));
     }
   };
-
-  init(container) {
-    render(this.#sortView, container, RenderPosition.AFTERBEGIN);
-  }
 }
-

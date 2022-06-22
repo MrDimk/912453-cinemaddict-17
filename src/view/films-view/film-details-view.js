@@ -177,6 +177,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
   #newCommentText = '';
   #newCommentEmoji = null;
   #currentScrollTop = 0;
+  #clearNewComment = false;
 
   static set currentDetailsPopup(instanse) {
     this.#currentDetailsPopup = instanse;
@@ -206,10 +207,10 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.#container = container;
   }
 
-  init = (film) => {
+  init(film) {
     this._state = FilmDetailsView.dataToState(film, this.filmComments, this.#newCommentEmoji, this.#newCommentText);
     this.render();
-  };
+  }
 
   get filmComments() {
     const filmComments = this.loadComments().filter((comment) => this.#film.comments.some((id) => comment.id === id));
@@ -225,7 +226,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
   }
 
   get newCommentText() {
-    return this.#newCommentText;
+    return this.#clearNewComment ? '' : this.#newCommentText;
   }
 
   set newCommentText(text) {
@@ -233,7 +234,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
   }
 
   get newCommentEmoji() {
-    return this.#newCommentEmoji;
+    return this.#clearNewComment ? null : this.#newCommentEmoji;
   }
 
   set newCommentEmoji(emoji) {
@@ -253,13 +254,12 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
     this.#buttons.commentDelete = this.element.querySelectorAll('.film-details__comment-delete');
 
+    KeyHandler.add('cmd+Enter', this.#onFormSubmit);
+
     this.#form = this.element.querySelector('.film-details__inner');
     this.#form.addEventListener('change', (evt) => this.#onCommentEmojiChange(evt));
     this.#form.addEventListener('input', (evt) => this.#onNewCommentInput(evt));
-    KeyHandler.add('cmd+Enter', this.#onFormSubmit);
-
     this.element.addEventListener('scroll', (evt) => this.#onDetailsScroll(evt));
-
     this.#form.querySelector('.film-details__comments-list').addEventListener('click', (evt) => this.#onCommentDelete(evt));
   };
 
@@ -292,25 +292,33 @@ export default class FilmDetailsView extends AbstractStatefulView {
   // Выполнение сторонних обработчиков событий
   #onCloseButtonClick = (evt) => {
     evt.preventDefault();
+    this.#clearNewComment = true;
+    this._state.newComment.emoji = null;
+    this._state.newComment.text = '';
     this.#callback.closeButtonClick();
   };
 
   #onControlButtonClick = (evt, control) => {
     evt.preventDefault();
+    KeyHandler.remove('cmd+Enter', this.#onFormSubmit);
     this.#callback.controlChange(control);
   };
 
   // Выполнение внутренних обработчиков
   #onFormSubmit = () => {
-    if (this.#newCommentEmoji && this.#newCommentText) {
+    if (this._state.newComment.emoji && this.#newCommentText) {
+      KeyHandler.remove('cmd+Enter', this.#onFormSubmit);
+      this.#clearNewComment = true;
       this.#callback.formSubmit({
         comment: this.#newCommentText,
         emotion: this._state.newComment.emoji,
         filmId: this.#film.id
       });
+      this._state.newComment.emoji = null;
+      this._state.newComment.text = '';
     }
-    KeyHandler.remove('cmd+Enter', this.#onFormSubmit);
   };
+
 
   #onCommentEmojiChange = (evt) => {
     evt.preventDefault();

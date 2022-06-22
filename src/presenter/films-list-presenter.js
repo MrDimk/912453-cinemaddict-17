@@ -99,6 +99,17 @@ export default class FilmsListPresenter {
     this.#cardsOnPageCounter = count;
   };
 
+  renderTitle(titleText = this.#title, isHidden = this.#isHidden) {
+    if (this.#titleView) {
+      const prevTitle = this.#titleView;
+      this.#titleView = new FilmsTitleView(titleText, isHidden);
+      replace(this.#titleView, prevTitle);
+    } else {
+      this.#titleView = new FilmsTitleView(titleText, isHidden);
+      render(this.#titleView, this.#filmsListContainerView.element, RenderPosition.BEFOREBEGIN);
+    }
+  }
+
   #renderShowMoreButton() {
     if (this.#showMoreButton) {
       this.#removeShowMoreButton();
@@ -111,17 +122,6 @@ export default class FilmsListPresenter {
   #removeShowMoreButton() {
     if (this.#showMoreButton) {
       this.#showMoreButton.removeFromDOM();
-    }
-  }
-
-  renderTitle(titleText = this.#title, isHidden = this.#isHidden) {
-    if (this.#titleView) {
-      const prevTitle = this.#titleView;
-      this.#titleView = new FilmsTitleView(titleText, isHidden);
-      replace(this.#titleView, prevTitle);
-    } else {
-      this.#titleView = new FilmsTitleView(titleText, isHidden);
-      render(this.#titleView, this.#filmsListContainerView.element, RenderPosition.BEFOREBEGIN);
     }
   }
 
