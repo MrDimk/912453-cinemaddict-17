@@ -16,8 +16,6 @@ export default class Model extends Observable {
     return this.#serverAPI.load().comments;
   }
 
-  loadComments = () => this.#serverAPI.load().comments;
-
   get user() {
     return this.#serverAPI.load().userData;
   }
@@ -25,6 +23,8 @@ export default class Model extends Observable {
   set films(update) {
     this.#serverAPI.films = update;
   }
+
+  loadComments = () => this.#serverAPI.load().comments;
 
   updateFilm(updateType, update) {
     this.#serverAPI.updateFilm(update);
