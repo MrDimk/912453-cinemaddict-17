@@ -60,8 +60,12 @@ const createFilmDetailsTemplate = (state) => {
     </label>
   `));
 
+  let emojiImage = '';
+  if (EMOJIES[state.newComment.emoji]) {
+    emojiImage = `<img src="${EMOJIES[state.newComment.emoji]}" width="55" height="55" alt="emoji-${state.newComment.emoji}">`;
+  }
   const newComment = {
-    img: state.newComment.emoji ? `<img src="${EMOJIES[state.newComment.emoji]}" width="55" height="55" alt="emoji-${state.newComment.emoji}">` : '',
+    img: emojiImage,
     text: state.newComment.text
   };
 
@@ -171,6 +175,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
   #form;
   #container;
   #newCommentText = '';
+  #newCommentEmoji = null;
   #currentScrollTop = 0;
 
   static set currentDetailsPopup(instanse) {
@@ -185,12 +190,12 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.#currentDetailsPopup = null;
   }
 
-  static dataToState = (film, comments) => ({
+  static dataToState = (film, comments, currentEmoji = null, currentCommentText = '') => ({
     ...FilmDataAdapter.forDetails(film),
     comments: comments,
     newComment: {
-      emoji: null,
-      text: ''
+      emoji: currentEmoji,
+      text: currentCommentText
     }
   });
 
@@ -201,10 +206,10 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.#container = container;
   }
 
-  init(film) {
-    this._state = FilmDetailsView.dataToState(film, this.filmComments);
+  init = (film) => {
+    this._state = FilmDetailsView.dataToState(film, this.filmComments, this.#newCommentEmoji, this.#newCommentText);
     this.render();
-  }
+  };
 
   get filmComments() {
     const filmComments = this.loadComments().filter((comment) => this.#film.comments.some((id) => comment.id === id));
@@ -217,6 +222,22 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   get buttons() {
     return this.#buttons;
+  }
+
+  get newCommentText() {
+    return this.#newCommentText;
+  }
+
+  set newCommentText(text) {
+    this.#newCommentText = text;
+  }
+
+  get newCommentEmoji() {
+    return this.#newCommentEmoji;
+  }
+
+  set newCommentEmoji(emoji) {
+    this.#newCommentEmoji = emoji;
   }
 
   getCurrentScroll = () => this.#currentScrollTop;
@@ -248,7 +269,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
   }
 
   close() {
-    this.#newCommentText = '';
     this.removeFromDOM();
   }
 
@@ -282,7 +302,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   // Выполнение внутренних обработчиков
   #onFormSubmit = () => {
-    if (this._state.newComment.emoji && this.#newCommentText) {
+    if (this.#newCommentEmoji && this.#newCommentText) {
       this.#callback.formSubmit({
         comment: this.#newCommentText,
         emotion: this._state.newComment.emoji,
@@ -294,10 +314,11 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   #onCommentEmojiChange = (evt) => {
     evt.preventDefault();
+    this.#newCommentEmoji = evt.target.value;
     if (evt.target.name === 'comment-emoji') {
       this.updateElement({
         newComment: {
-          emoji: evt.target.value,
+          emoji: this.#newCommentEmoji,
           text: this.#newCommentText
         },
         scrollTop: this.#currentScrollTop
@@ -317,11 +338,13 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   #onCommentDelete = (evt) => {
     evt.preventDefault();
-    this.#callback.commentDelete(
-      {
-        filmId: this.#film.id,
-        commentId: evt.target.dataset.id
-      }
-    );
+    if (evt.target.dataset.id) {
+      this.#callback.commentDelete(
+        {
+          filmId: this.#film.id,
+          commentId: evt.target.dataset.id
+        }
+      );
+    }
   };
 }

@@ -43,6 +43,8 @@ export default class FilmPresenter {
     }
     if (FilmDetailsView.currentDetailsPopup && FilmDetailsView.currentDetailsPopup === prevFilmDetailsView) {
       const currentScroll = prevFilmDetailsView.getCurrentScroll();
+      this.#filmDetailsView.newCommentText = prevFilmDetailsView.newCommentText;
+      this.#filmDetailsView.newCommentEmoji = prevFilmDetailsView.newCommentEmoji;
       this.#onCloseDetails(prevFilmDetailsView);
       this.showDetails();
       this.#filmDetailsView.restoreScroll(currentScroll);
@@ -81,7 +83,7 @@ export default class FilmPresenter {
   #onControlChange = (control) => {
     const update = {...this.#film};
     update['user_details'][control] = !this.#film['user_details'][control];
-    this.#changeData(UserAction.UPDATE_FILM, UpdateType.PATCH, update);
+    this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, update);
   };
 
   #onCommentAdd = (newComment) => {

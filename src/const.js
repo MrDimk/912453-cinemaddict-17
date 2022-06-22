@@ -1,9 +1,4 @@
-const EMPTY_LIST_MESSAGES = {
-  allMovies: 'There are no movies in our database',
-  watchlist: 'There are no movies to watch now',
-  history: 'There are no watched movies now',
-  favorites: 'There are no favorite movies now'
-};
+
 
 const UserAction = {
   UPDATE_FILM: 'UPDATE_FILM',
@@ -24,4 +19,11 @@ const FilterType = {
   FAVORITES: 'favorites',
 };
 
-export {EMPTY_LIST_MESSAGES, UserAction, UpdateType, FilterType};
+const EmptyFilmsListMessage = {
+  [FilterType.ALL]: 'There are no movies in our database',
+  [FilterType.WATCHLIST]: 'There are no movies to watch now',
+  [FilterType.HISTORY]: 'There are no watched movies now',
+  [FilterType.FAVORITES]: 'There are no favorite movies now',
+};
+
+export {UserAction, UpdateType, FilterType, EmptyFilmsListMessage};

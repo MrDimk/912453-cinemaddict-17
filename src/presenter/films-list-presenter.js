@@ -1,4 +1,4 @@
-import {render, RenderPosition} from '../framework/render';
+import {render, RenderPosition, replace} from '../framework/render';
 import FilmPresenter from './film-presenter';
 import FilmsListView from '../view/films-view/films-list-view';
 import FilmsTitleView from '../view/films-view/films-list-title-view';
@@ -6,7 +6,7 @@ import FilmsListContainerView from '../view/films-view/films-list-container-view
 import ShowMoreButtonView from '../view/films-view/show-more-button-view';
 import SortPresenter from './sort-presenter';
 
-import {EMPTY_LIST_MESSAGES, UserAction, UpdateType} from '../const';
+import {UserAction, UpdateType, EmptyFilmsListMessage} from '../const';
 import {filter} from '../util';
 
 // Класс описывает списки фильмов на сайте, их заголовок, стиль, содержимое и порядок его отображения
@@ -68,12 +68,14 @@ export default class FilmsListPresenter {
     this.#sortPresenter.init(container);
   }
 
-  updateFilmsList = (updatedList) => {
+  updateFilmsList = (updatedList, resetCounter = true) => {
     this.#filmsData = updatedList;
     for (const film of this.#filmsPresentersMap.values()) {
       film.hideCard();
     }
-    this.#cardsOnPageCounter = 0;
+    if (resetCounter) {
+      this.#cardsOnPageCounter = 0;
+    }
     this.renderFilmsCards();
   };
 
@@ -113,23 +115,21 @@ export default class FilmsListPresenter {
   }
 
   renderTitle(titleText = this.#title, isHidden = this.#isHidden) {
-    // Заголовок будем визуализировать при инициализации а также при каждом применении фильтра можно выдавать релевантное сообщение
-    // поэтому проверку на пустой список лучше прямо тут реализовать
-    // пока предусматриваем только один "case", а проверку только на пустой #filmsList,
-    // при реализации фильтров будем дополнять логику
-    if (this.#filmsPresentersMap.length === 0) {
-      isHidden = false;
-      switch (this.#filter) {
-        case null:
-          titleText = EMPTY_LIST_MESSAGES.allMovies;
-          break;
-      }
-    }
     if (this.#titleView) {
-      this.#titleView.removeElement();
+      const prevTitle = this.#titleView;
+      this.#titleView = new FilmsTitleView(titleText, isHidden);
+      replace(this.#titleView, prevTitle);
+    } else {
+      this.#titleView = new FilmsTitleView(titleText, isHidden);
+      render(this.#titleView, this.#filmsListContainerView.element, RenderPosition.BEFOREBEGIN);
     }
-    this.#titleView = new FilmsTitleView(titleText, isHidden);
-    render(this.#titleView, this.#filmsListContainerView.element, RenderPosition.BEFOREBEGIN);
+  }
+
+  #onMinorUpdate(data) {
+    this.#filmsPresentersMap.get(data.id).init(data);
+    this.updateFilmsList(this.getFilms());
+    this.#isHidden = this.#cardsOnPageCounter > 0;
+    this.renderTitle(EmptyFilmsListMessage[this.#filterModel.filter], this.#isHidden);
   }
 
   #modelEventHandler = (updateType, data) => {
@@ -138,13 +138,18 @@ export default class FilmsListPresenter {
         this.#filmsPresentersMap.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#onMinorUpdate(data);
         break;
       case UpdateType.MOJOR:
         break;
     }
   };
 
-  #filterModelEventHandler = () => this.#sortPresenter.setSort(this.#defaultSortType, true);
+  #filterModelEventHandler = () => {
+    this.#sortPresenter.setSort(this.#defaultSortType, true);
+    this.#isHidden = this.#cardsOnPageCounter > 0;
+    this.renderTitle(EmptyFilmsListMessage[this.#filterModel.filter], this.#isHidden);
+  };
 
   #viewActionHandler = (actionType, updateType, update) => {
     switch (actionType) {
